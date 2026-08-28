@@ -1,7 +1,9 @@
 {
   "include": ["src", "tests", "frontend"],
+  "stubPath": "typings",
   "extraPaths": [
     ".",
+    "typings",
     ".venv/lib/python3.9/site-packages"
   ],
   "executionEnvironments": [
@@ -9,6 +11,7 @@
       "root": ".",
       "extraPaths": [
         ".",
+        "typings",
         ".venv/lib/python3.9/site-packages"
       ]
     }

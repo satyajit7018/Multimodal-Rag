@@ -1,6 +1,6 @@
-"""Unit Tests for Multimodal Datasheet RAG System.
+"""Unit Tests for Scaled Multimodal Datasheet RAG System.
 Tests embedder, vector store, table extraction, diagram processing,
-CTO generation, and parallel multi-store search.
+CTO generation, circuit validation, wiring assistant, and parallel multi-store search.
 """
 
 import os
@@ -11,6 +11,8 @@ from src.ingest.table_extract import extract_tables_with_metadata
 from src.ingest.image_extract import extract_images_with_metadata
 from src.generate.llm import generate_cto_answer, answer_with_confidence
 from src.retrieve.multimodal_search import search_multimodal_parallel, search_baseline
+from src.engine.circuit_validator import validate_circuit_compatibility
+from src.engine.wiring_assistant import generate_wiring_plan
 
 
 def test_embedder_dimensions():
@@ -68,3 +70,29 @@ def test_confidence_refusal():
     answer, score = answer_with_confidence("What is the recipe for pasta?", dummy_hits, [], threshold=0.55)
     assert "not have enough verified information" in answer.lower()
     assert score < 0.55
+
+
+def test_circuit_validator_i2c_collision():
+    """Verify circuit validator detects PCA9685 and INA219 default address collision (0x40)."""
+    result = validate_circuit_compatibility(["ESP32", "PCA9685", "INA219"])
+    assert result["status"] == "issues_detected"
+    assert len(result["critical_errors"]) > 0
+    assert any("0x40" in err["details"] for err in result["critical_errors"])
+
+
+def test_circuit_validator_voltage_mismatch():
+    """Verify circuit validator flags 5V logic on non-5V-tolerant RP2040."""
+    result = validate_circuit_compatibility(["RP2040", "MAX485"])
+    assert len(result["compatibility_warnings"]) > 0
+    assert any("Level Mismatch" in w["type"] or "3.3V" in w["details"] for w in result["compatibility_warnings"])
+
+
+def test_wiring_assistant_generator():
+    """Verify wiring assistant generates grounded pin connections and power rails."""
+    wiring = generate_wiring_plan("ESP32", ["BME280", "MPU6050"])
+    assert wiring["status"] == "success"
+    assert len(wiring["wiring_table"]) >= 4
+    # Check I2C line presence
+    signals = [w["Signal Type"] for w in wiring["wiring_table"]]
+    assert "I2C Bus" in signals
+    assert "Power Supply" in signals

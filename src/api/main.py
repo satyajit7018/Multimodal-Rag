@@ -3,6 +3,7 @@ Provides endpoints for multimodal queries, visual grounding assets,
 pipeline ingestion triggers, and benchmark reporting.
 """
 
+from __future__ import annotations
 import os
 import json
 import datetime

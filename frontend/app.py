@@ -238,18 +238,6 @@ st.markdown("""
 
 # ----------------- SIDEBAR -----------------
 with st.sidebar:
-    st.markdown("### 🎛️ Architecture Control")
-    st.markdown("""
-    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-        <div style="font-size:0.8rem; color:#94A3B8; font-weight:600; text-transform:uppercase;">Supervisory CTO</div>
-        <div style="font-size:1.05rem; font-weight:700; color:#C084FC; margin-bottom:10px;">Claude Opus 4.6</div>
-        <div style="font-size:0.8rem; color:#94A3B8; font-weight:600; text-transform:uppercase;">Extraction Squad</div>
-        <div style="font-size:1.05rem; font-weight:700; color:#38BDF8; margin-bottom:10px;">Gemini 3.7 Flash (3x)</div>
-        <div style="font-size:0.8rem; color:#94A3B8; font-weight:600; text-transform:uppercase;">Vector Engine</div>
-        <div style="font-size:1.05rem; font-weight:700; color:#34D399;">Qdrant 3-Store + BM25 RRF</div>
-    </div>
-    """, unsafe_allow_html=True)
-
     st.markdown("### 📊 Active Corpus Health")
     st.markdown("""
     • **Datasheets Indexed**: `32 Components`  

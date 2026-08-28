@@ -1,9 +1,7 @@
-# ⚡ Datasheet Assistant Pro — Scaled Multimodal RAG with Multi-Model CTO Architecture
+# ⚡ Datasheet Engineering Studio — Hardware Intelligence Platform
 
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
-[![Tests Passing](https://img.shields.io/badge/Tests-10%2F10%20Passed%20(100%25)-success.svg)](https://github.com/satyajit7018/Multimodal-Rag)
-[![CTO Model](https://img.shields.io/badge/CTO%20Model-Claude%20Opus%204.6-7C3AED.svg)](https://www.anthropic.com/)
-[![Subagent Squad](https://img.shields.io/badge/Subagents-Gemini%203.7%20Flash-2563EB.svg)](https://deepmind.google/technologies/gemini/)
+[![Tests Passing](https://img.shields.io/badge/Tests-13%2F13%20Passed%20(100%25)-success.svg)](https://github.com/satyajit7018/Multimodal-Rag)
 [![Vector DB](https://img.shields.io/badge/Vector%20DB-Qdrant%203--Store-DC2626.svg)](https://qdrant.tech/)
 [![API](https://img.shields.io/badge/API-FastAPI%202.0-059669.svg)](https://fastapi.tiangolo.com/)
 [![UI](https://img.shields.io/badge/UI-Streamlit%20Pro%20Studio-FF4B4B.svg)](https://streamlit.io/)

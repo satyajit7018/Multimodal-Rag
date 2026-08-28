@@ -1,6 +1,7 @@
 """Unit Tests for Scaled Multimodal Datasheet RAG System.
 Tests embedder, vector store, table extraction, diagram processing,
-CTO generation, circuit validation, wiring assistant, BM25 hybrid search, and PDF report generator.
+synthesis generation, circuit validation, wiring assistant, BM25 hybrid search,
+PDF report generator, EDA Netlist exporters, firmware code generator, and replacement advisor.
 """
 
 import os
@@ -15,6 +16,9 @@ from src.engine.circuit_validator import validate_circuit_compatibility
 from src.engine.wiring_assistant import generate_wiring_plan, generate_mermaid_circuit_diagram
 from src.retrieve.hybrid_search import BM25Index, reciprocal_rank_fusion
 from src.engine.report_generator import generate_engineering_pdf_report
+from src.engine.netlist_exporter import generate_kicad_netlist, generate_spice_netlist
+from src.engine.firmware_generator import generate_arduino_cpp, generate_micropython_code
+from src.engine.replacement_advisor import get_replacement_recommendations
 
 
 def test_embedder_dimensions():
@@ -126,3 +130,39 @@ def test_pdf_design_report_generator():
     pdf_out = generate_engineering_pdf_report("Test Drone Project", "ESP32", ["BME280", "MPU6050", "PCA9685"])
     assert os.path.exists(pdf_out)
     assert os.path.getsize(pdf_out) > 1000
+
+
+def test_kicad_and_spice_netlist_export():
+    """Verify KiCad and SPICE netlist generators produce valid EDA formats."""
+    kicad_net = generate_kicad_netlist("ESP32", ["BME280", "MPU6050"])
+    assert '(export (version "E")' in kicad_net
+    assert 'U1' in kicad_net
+    assert 'I2C' in kicad_net
+
+    spice_cir = generate_spice_netlist("ESP32", ["BME280"])
+    assert "* SPICE Netlist" in spice_cir
+    assert "VCC_3V3" in spice_cir
+    assert ".tran" in spice_cir
+
+
+def test_firmware_code_generation():
+    """Verify Arduino C++ and MicroPython driver generator."""
+    cpp_code = generate_arduino_cpp("ESP32", ["BME280", "PCA9685"])
+    assert "Wire.begin" in cpp_code
+    assert "ADDR_BME280" in cpp_code
+    assert "ADDR_PCA9685" in cpp_code
+
+    py_code = generate_micropython_code("ESP32", ["BME280"])
+    assert "machine.I2C" in py_code
+    assert "scan()" in py_code
+
+
+def test_replacement_advisor():
+    """Verify drop-in replacement recommendations for linear regulators and motor drivers."""
+    recs_lm7805 = get_replacement_recommendations("LM7805")
+    assert len(recs_lm7805) >= 1
+    assert any("MP1584" in r["replacement"] for r in recs_lm7805)
+
+    recs_l298n = get_replacement_recommendations("L298N")
+    assert len(recs_l298n) >= 1
+    assert any("TB6612FNG" in r["replacement"] for r in recs_l298n)

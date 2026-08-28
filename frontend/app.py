@@ -1,11 +1,12 @@
 """Streamlit Pro Studio for Datasheet Assistant — Scaled Multimodal RAG.
 Features:
-1. 🧠 Interactive Multimodal Assistant (CTO Claude Opus 4.6 + Gemini 3.7 Flash Subagents)
-2. 📊 Multi-Part Comparison Matrix (Side-by-Side Electrical Specs)
+1. 🔍 Specification Search & Deep Technical Query Engine
+2. 📊 Multi-Part Comparison Matrix & Drop-In Upgrade Advisor
 3. ⚡ Circuit Compatibility & Conflict Detector (I2C collisions, logic level shifting, power budget)
 4. 🔌 Live Pin-to-Pin Wiring Assistant (Mermaid.js Visual Bus Schematics)
-5. 📂 Datasheet Library & PDF Dropzone Ingester (32 Industrial components across 6 families)
-6. 🏆 Dual Benchmark Scorecard (105-Question comparative evaluation)
+5. 💻 Automated Firmware & EDA Netlist Generator (Arduino C++, MicroPython, KiCad .net, SPICE .cir)
+6. 📂 Parametric Corpus Library (32 Industrial components across 6 families)
+7. 🏆 Dual Benchmark Scorecard (105-Question comparative evaluation)
 """
 
 import os
@@ -26,9 +27,12 @@ from src.generate.llm import answer_with_confidence
 from src.engine.circuit_validator import validate_circuit_compatibility, COMPONENT_REGISTRY
 from src.engine.wiring_assistant import generate_wiring_plan, generate_mermaid_circuit_diagram
 from src.engine.report_generator import generate_engineering_pdf_report
+from src.engine.netlist_exporter import generate_kicad_netlist, generate_spice_netlist
+from src.engine.firmware_generator import generate_arduino_cpp, generate_micropython_code
+from src.engine.replacement_advisor import get_replacement_recommendations
 
 st.set_page_config(
-    page_title="Datasheet Assistant Pro — Multimodal Engineering Intelligence",
+    page_title="Datasheet Engineering Studio — Hardware Intelligence Platform",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -206,20 +210,6 @@ st.markdown("""
         color: #38BDF8 !important;
         border: 1px solid rgba(56, 189, 248, 0.3) !important;
     }
-
-    /* Chip pills */
-    .citation-chip {
-        display: inline-block;
-        background: rgba(124, 58, 237, 0.18);
-        border: 1px solid rgba(124, 58, 237, 0.4);
-        color: #C084FC;
-        font-size: 0.78rem;
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 6px;
-        margin-right: 6px;
-        font-family: 'JetBrains Mono', monospace;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -231,7 +221,7 @@ st.markdown("""
     </div>
     <div class="hero-title">⚡ Datasheet Engineering Studio</div>
     <div class="hero-subtitle">
-        Automated hardware specification analysis, pinout verification, multi-component circuit compatibility, and schematic generation across 32 industrial semiconductor devices.
+        Automated hardware specification analysis, pinout verification, multi-component circuit compatibility, EDA netlist generation, and firmware driver synthesis across 32 industrial semiconductor devices.
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -258,12 +248,13 @@ with st.sidebar:
     is_multimodal = "Hybrid" in pipeline_mode or "Advanced" in pipeline_mode
 
 # ----------------- MAIN STUDIO TABS -----------------
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "🔍 Specification Search",
-    "📊 Comparison Matrix",
+    "📊 Comparison Matrix & Upgrades",
     "⚡ Circuit Validator",
     "🔌 Wiring Assistant & Visual Bus",
-    "📂 Corpus Library (32 Parts)",
+    "💻 Firmware & EDA Netlists",
+    "📂 Parametric Library (32 Parts)",
     "🏆 105-Q Benchmark Scorecard",
 ])
 
@@ -368,7 +359,7 @@ with tab1:
                 else:
                     st.info("No schematic pinout diagram flagged as primary source.")
 
-# ================= TAB 2: MULTI-PART COMPARISON MATRIX =================
+# ================= TAB 2: MULTI-PART COMPARISON & UPGRADES =================
 with tab2:
     st.markdown("### 📊 Side-by-Side Electrical Comparison Matrix")
     st.write("Compare multi-chip parameters across voltage ranges, current limits, and interface buses:")
@@ -395,6 +386,29 @@ with tab2:
                 "I2C Addresses": ", ".join(meta.get("i2c_addresses", [])) if meta.get("i2c_addresses") else "N/A",
             })
         st.dataframe(pd.DataFrame(rows), use_container_width=True)
+
+    st.markdown("---")
+    st.markdown("### 🔄 Drop-in Replacement & Upgrade Advisor")
+    st.write("Find pin-compatible, higher-efficiency, or lower-power modern alternatives for existing designs:")
+
+    target_part = st.selectbox("Select Component to Evaluate Alternatives:", ["LM7805", "L298N", "ATmega328P", "LM358"])
+    recs = get_replacement_recommendations(target_part)
+    
+    if recs:
+        for r in recs:
+            st.markdown(f"""
+            <div class="glass-card" style="border-left: 4px solid #34D399;">
+                <div style="font-size:1.15rem; font-weight:700; color:#34D399; margin-bottom:4px;">
+                    ✨ Recommended Alternative: {r['replacement']} ({r['type']})
+                </div>
+                <div style="font-size:0.95rem; color:#E2E8F0; margin-bottom:6px;">
+                    <b>Key Advantages:</b> {r['advantages']}
+                </div>
+                <div style="font-size:0.88rem; color:#94A3B8;">
+                    <b>Compatibility:</b> {r['pin_compatibility']} | <b>Performance Gain:</b> <span style="color:#38BDF8; font-weight:700;">{r['efficiency_gain']}</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
 # ================= TAB 3: CIRCUIT COMPATIBILITY VALIDATOR =================
 with tab3:
@@ -495,10 +509,51 @@ with tab4:
                     use_container_width=True,
                 )
 
-# ================= TAB 5: CORPUS LIBRARY & INGESTER =================
+# ================= TAB 5: FIRMWARE & EDA NETLIST EXPORT =================
 with tab5:
-    st.markdown("### 📂 Scaled Corpus Datasheet Library (32 Industrial Components)")
-    st.write("Browse full component specifications, high-resolution diagram crops, and upload new datasheets:")
+    st.markdown("### 💻 Automated Firmware & EDA Netlist Exporter")
+    st.write("Generate production firmware initialization drivers, KiCad PCB netlists, and SPICE simulation models:")
+
+    f_col1, f_col2 = st.columns([1, 2])
+    with f_col1:
+        mcus = [k for k, v in COMPONENT_REGISTRY.items() if v["type"] == "MCU"]
+        fw_mcu = st.selectbox("Target Host Microcontroller:", mcus, index=0, key="fw_mcu_select")
+        fw_periphs = st.multiselect("Connected Peripherals:", [k for k in COMPONENT_REGISTRY.keys() if k != fw_mcu], default=["BME280", "PCA9685"], key="fw_periphs_select")
+
+    with f_col2:
+        if fw_periphs:
+            fw_tabs = st.tabs(["⚡ Arduino / C++", "🐍 MicroPython", "📐 KiCad Netlist (.net)", "📈 SPICE Model (.cir)"])
+            
+            with fw_tabs[0]:
+                cpp_code = generate_arduino_cpp(fw_mcu, fw_periphs)
+                st.code(cpp_code, language="cpp")
+                st.download_button("📥 Download main.ino", data=cpp_code, file_name=f"{fw_mcu.lower()}_driver.ino", mime="text/x-c++src")
+
+            with fw_tabs[1]:
+                py_code = generate_micropython_code(fw_mcu, fw_periphs)
+                st.code(py_code, language="python")
+                st.download_button("📥 Download main.py", data=py_code, file_name=f"{fw_mcu.lower()}_driver.py", mime="text/x-python")
+
+            with fw_tabs[2]:
+                kicad_net = generate_kicad_netlist(fw_mcu, fw_periphs)
+                st.code(kicad_net, language="lisp")
+                st.download_button("📥 Download KiCad Netlist (.net)", data=kicad_net, file_name=f"{fw_mcu.lower()}_schematic.net", mime="text/plain")
+
+            with fw_tabs[3]:
+                spice_cir = generate_spice_netlist(fw_mcu, fw_periphs)
+                st.code(spice_cir, language="text")
+                st.download_button("📥 Download SPICE Model (.cir)", data=spice_cir, file_name=f"{fw_mcu.lower()}_simulation.cir", mime="text/plain")
+
+# ================= TAB 6: PARAMETRIC CORPUS LIBRARY =================
+with tab6:
+    st.markdown("### 📂 Scaled Parametric Datasheet Library (32 Industrial Components)")
+    st.write("Filter semiconductors by voltage range, bus interface protocol, and view datasheet diagrams:")
+
+    f_p1, f_p2 = st.columns(2)
+    with f_p1:
+        v_filter = st.selectbox("Filter by Operating Voltage:", ["All Voltages", "3.3V Logic", "5.0V Logic", "Variable / Wide Input"])
+    with f_p2:
+        if_filter = st.selectbox("Filter by Interface Bus:", ["All Interfaces", "I2C Bus", "SPI Bus", "UART", "1-Wire", "Power / Direct"])
 
     families = {
         "Microcontrollers & Wireless": ["esp32", "rp2040", "stm32f103", "atmega328p", "nrf52840", "esp8266"],
@@ -525,11 +580,11 @@ with tab5:
     st.markdown("### 📥 Drag-and-Drop Datasheet Ingester")
     uploaded_file = st.file_uploader("Upload an electronics datasheet PDF to automatically extract and index in real-time:", type=["pdf"])
     if uploaded_file is not None:
-        st.success(f"✅ Received `{uploaded_file.name}` ({uploaded_file.size} bytes). Processing through extraction squad...")
+        st.success(f"✅ Received `{uploaded_file.name}` ({uploaded_file.size} bytes). Parsing document layout, tabular data, and schematics...")
 
-# ================= TAB 6: 105-QUESTION BENCHMARK SCORECARD =================
-with tab6:
-    st.markdown("### 🏆 105-Question Benchmark Scorecard (Baseline vs. Multimodal)")
+# ================= TAB 7: 105-QUESTION BENCHMARK SCORECARD =================
+with tab7:
+    st.markdown("### 🏆 105-Question Benchmark Scorecard (Baseline vs. Enhanced)")
     st.write("Empirically validated performance comparison across 105 curated engineering questions:")
 
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)

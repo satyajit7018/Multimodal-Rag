@@ -9,6 +9,7 @@ from typing import Dict, Any, List
 from src.embed.embedder import Embedder
 from src.retrieve.vector_store import VectorStore
 from src.retrieve.reranker import rerank
+from src.retrieve.hybrid_search import BM25Index, reciprocal_rank_fusion
 
 _EMBEDDER = None
 _TEXT_STORE = None
@@ -63,17 +64,20 @@ def search_multimodal_parallel(question: str, top_k_per_modality: int = 3, top_r
 
     all_hits = list(text_hits) + list(table_hits) + list(image_hits)
     
-    # Candidate text passages for reranking
-    candidates = []
-    hit_map = {}
-    for h in all_hits:
-        content = h.payload.get("content") or h.payload.get("embed_text") or h.payload.get("caption", "")
-        if content and content not in hit_map:
-            candidates.append(content)
-            hit_map[content] = h
+    # 1. Dense Candidates
+    dense_items = [{"content": (h.payload.get("content") or h.payload.get("embed_text") or h.payload.get("caption", "")), "hit": h} for h in all_hits]
+    
+    # 2. BM25 Lexical Scoring on candidate payloads
+    bm25 = BM25Index()
+    bm25.fit(dense_items, text_field="content")
+    sparse_hits = bm25.search(question, top_k=len(dense_items), text_field="content")
 
-    # Cross-encoder precision rerank
-    ranked_content = rerank(question, candidates, top_k=top_rerank) if candidates else []
+    # 3. Reciprocal Rank Fusion (RRF)
+    fused_candidates = reciprocal_rank_fusion(dense_items, sparse_hits, k=60, top_n=top_rerank * 2)
+    candidate_texts = [c["content"] for c in fused_candidates if c.get("content")]
+
+    # 4. Cross-encoder precision rerank
+    ranked_content = rerank(question, candidate_texts, top_k=top_rerank) if candidate_texts else []
 
     # If an image hit is relevant, ensure its diagram pins and caption are grounded in contexts
     if image_hits and image_hits[0].score > 0.28:

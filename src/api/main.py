@@ -16,8 +16,16 @@ from typing import Optional, Dict, Any, List
 
 from src.retrieve.multimodal_search import search_multimodal_parallel, search_baseline
 from src.generate.llm import answer_with_confidence
+from fastapi.responses import FileResponse
 from src.engine.circuit_validator import validate_circuit_compatibility, COMPONENT_REGISTRY
 from src.engine.wiring_assistant import generate_wiring_plan
+from src.engine.report_generator import generate_engineering_pdf_report
+
+
+class ReportRequest(BaseModel):
+    project_name: str
+    host_mcu: str
+    peripherals: List[str]
 
 app = FastAPI(
     title="Datasheet Assistant — Scaled Multimodal RAG API",
@@ -151,6 +159,13 @@ def validate_circuit(req: CircuitValidateRequest):
 def get_circuit_wiring(req: WiringRequest):
     """Generates pin-to-pin wiring map between host MCU and peripheral chips."""
     return generate_wiring_plan(req.host_mcu, req.peripherals)
+
+
+@app.post("/circuit/report")
+def create_pdf_report(req: ReportRequest):
+    """Generates and returns a publication-ready PDF Engineering Design Report & BOM."""
+    pdf_path = generate_engineering_pdf_report(req.project_name, req.host_mcu, req.peripherals)
+    return FileResponse(pdf_path, media_type="application/pdf", filename=os.path.basename(pdf_path))
 
 
 @app.post("/upload/pdf")

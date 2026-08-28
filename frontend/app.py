@@ -17,7 +17,8 @@ from PIL import Image
 from src.retrieve.multimodal_search import search_multimodal_parallel, search_baseline
 from src.generate.llm import answer_with_confidence
 from src.engine.circuit_validator import validate_circuit_compatibility, COMPONENT_REGISTRY
-from src.engine.wiring_assistant import generate_wiring_plan
+from src.engine.wiring_assistant import generate_wiring_plan, generate_mermaid_circuit_diagram
+from src.engine.report_generator import generate_engineering_pdf_report
 
 st.set_page_config(
     page_title="Datasheet Assistant Pro — Multimodal RAG",
@@ -284,10 +285,27 @@ with tab4:
         if wiring_res["wiring_table"]:
             st.dataframe(pd.DataFrame(wiring_res["wiring_table"]), use_container_width=True)
 
+        # Visual Mermaid Diagram
+        st.markdown("#### 🗺️ Visual Bus Architecture & Interconnects")
+        mermaid_code = generate_mermaid_circuit_diagram(w_mcu, w_periphs)
+        st.markdown(f"```mermaid\n{mermaid_code}\n```")
+
         if wiring_res["engineering_notes"]:
             st.markdown("#### 📌 Engineering Notes & Pull-up Guidelines")
             for n in wiring_res["engineering_notes"]:
                 st.info(f"• {n}")
+
+        # PDF Design Report Export
+        st.markdown("---")
+        pdf_path = generate_engineering_pdf_report(f"{w_mcu} Custom Design", w_mcu, w_periphs)
+        with open(pdf_path, "rb") as f_pdf:
+            st.download_button(
+                label="📄 Download Publication-Ready PDF Design Report & BOM",
+                data=f_pdf.read(),
+                file_name=f"{w_mcu.lower()}_design_report.pdf",
+                mime="application/pdf",
+                type="primary",
+            )
 
 # ================= TAB 5: DATASHEET LIBRARY & INGESTER =================
 with tab5:

@@ -9,6 +9,7 @@ data/extracted/*
 !data/extracted/.gitkeep
 data/qdrant_storage/
 data/feedback_log.jsonl
+data/reports/
 .DS_Store
 fastapi
 pydantic

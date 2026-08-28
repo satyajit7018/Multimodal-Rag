@@ -1,6 +1,6 @@
 """Live Pin-to-Pin Wiring Assistant.
 Generates exact wiring schematics, pull-up resistor recommendations,
-and pin connection tables between any host microcontroller and peripheral modules.
+Mermaid.js circuit diagrams, and pin connection tables between any host microcontroller and peripheral modules.
 """
 
 from __future__ import annotations
@@ -149,3 +149,35 @@ def generate_wiring_plan(host_mcu: str, peripherals: List[str]) -> Dict[str, Any
         "wiring_table": wiring_table,
         "engineering_notes": notes,
     }
+
+
+def generate_mermaid_circuit_diagram(host_mcu: str, peripherals: List[str]) -> str:
+    """Generates Mermaid.js flow diagram string with color-coded signal buses."""
+    lines = ["graph LR"]
+    lines.append(f'    MCU["🧠 {host_mcu}"]:::mcuStyle')
+
+    for idx, periph in enumerate(peripherals):
+        if periph == host_mcu:
+            continue
+        p_id = f"P_{idx}"
+        lines.append(f'    {p_id}["📦 {periph}"]:::periphStyle')
+
+        w_plan = generate_wiring_plan(host_mcu, [periph])
+        for w in w_plan.get("wiring_table", []):
+            sig = w["Signal Type"]
+            s_pin = w["Source Pin"].split()[0]
+            t_pin = w["Target Pin"].split()[0]
+            if "I2C" in sig:
+                lines.append(f'    MCU -- "{s_pin}➔{t_pin} (I2C)" --> {p_id}')
+            elif "SPI" in sig:
+                lines.append(f'    MCU -- "{s_pin}➔{t_pin} (SPI)" --> {p_id}')
+            elif "UART" in sig:
+                lines.append(f'    MCU -- "{s_pin}➔{t_pin} (UART)" --> {p_id}')
+            elif "Power" in sig:
+                lines.append(f'    MCU -- "{s_pin}➔VCC" --> {p_id}')
+            elif "Ground" in sig:
+                lines.append(f'    MCU -- "GND➔GND" --> {p_id}')
+
+    lines.append("    classDef mcuStyle fill:#2563EB,stroke:#1D4ED8,stroke-width:2px,color:#FFFFFF;")
+    lines.append("    classDef periphStyle fill:#1E293B,stroke:#475569,stroke-width:2px,color:#FFFFFF;")
+    return "\n".join(lines)

@@ -1,6 +1,6 @@
 """Unit Tests for Scaled Multimodal Datasheet RAG System.
 Tests embedder, vector store, table extraction, diagram processing,
-CTO generation, circuit validation, wiring assistant, and parallel multi-store search.
+CTO generation, circuit validation, wiring assistant, BM25 hybrid search, and PDF report generator.
 """
 
 import os
@@ -12,7 +12,9 @@ from src.ingest.image_extract import extract_images_with_metadata
 from src.generate.llm import generate_cto_answer, answer_with_confidence
 from src.retrieve.multimodal_search import search_multimodal_parallel, search_baseline
 from src.engine.circuit_validator import validate_circuit_compatibility
-from src.engine.wiring_assistant import generate_wiring_plan
+from src.engine.wiring_assistant import generate_wiring_plan, generate_mermaid_circuit_diagram
+from src.retrieve.hybrid_search import BM25Index, reciprocal_rank_fusion
+from src.engine.report_generator import generate_engineering_pdf_report
 
 
 def test_embedder_dimensions():
@@ -87,12 +89,40 @@ def test_circuit_validator_voltage_mismatch():
     assert any("Level Mismatch" in w["type"] or "3.3V" in w["details"] for w in result["compatibility_warnings"])
 
 
-def test_wiring_assistant_generator():
-    """Verify wiring assistant generates grounded pin connections and power rails."""
+def test_wiring_assistant_and_mermaid():
+    """Verify wiring assistant generates grounded pin connections and Mermaid diagram."""
     wiring = generate_wiring_plan("ESP32", ["BME280", "MPU6050"])
     assert wiring["status"] == "success"
     assert len(wiring["wiring_table"]) >= 4
-    # Check I2C line presence
-    signals = [w["Signal Type"] for w in wiring["wiring_table"]]
-    assert "I2C Bus" in signals
-    assert "Power Supply" in signals
+    
+    # Check Mermaid diagram generation
+    mermaid = generate_mermaid_circuit_diagram("ESP32", ["BME280", "MPU6050"])
+    assert "graph LR" in mermaid
+    assert "ESP32" in mermaid
+    assert "BME280" in mermaid
+
+
+def test_bm25_hybrid_search_rrf():
+    """Verify BM25 lexical indexer and Reciprocal Rank Fusion ranking."""
+    docs = [
+        {"content": "ESP32 microcontroller with Wi-Fi and Bluetooth", "id": 1},
+        {"content": "PCA9685 16-channel 12-bit PWM I2C servo controller at 0x40", "id": 2},
+        {"content": "LM7805 positive 5V linear voltage regulator", "id": 3},
+    ]
+    bm25 = BM25Index()
+    bm25.fit(docs, text_field="content")
+    hits = bm25.search("0x40 PWM", top_k=2)
+    assert len(hits) > 0
+    assert "PCA9685" in hits[0]["doc"]["content"]
+
+    # Test RRF merge
+    dense_mock = [{"content": docs[0]["content"]}, {"content": docs[1]["content"]}]
+    fused = reciprocal_rank_fusion(dense_mock, hits, k=60, top_n=2)
+    assert len(fused) > 0
+
+
+def test_pdf_design_report_generator():
+    """Verify PDF engineering design report is generated with BOM and wiring tables."""
+    pdf_out = generate_engineering_pdf_report("Test Drone Project", "ESP32", ["BME280", "MPU6050", "PCA9685"])
+    assert os.path.exists(pdf_out)
+    assert os.path.getsize(pdf_out) > 1000

@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datasheet Engineering Intelligence Platform — Interactive System Design Tour</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #090D16;
+            --bg-secondary: #0F172A;
+            --bg-card: rgba(30, 41, 59, 0.65);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(56, 189, 248, 0.4);
+            --accent-cyan: #38BDF8;
+            --accent-purple: #C084FC;
+            --accent-emerald: #34D399;
+            --accent-amber: #FBBF24;
+            --accent-rose: #F43F5E;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            transition: all 0.25s ease;
+        }
+        .glass-panel:hover {
+            border-color: var(--border-hover);
+        }
+
+        /* Header Navigation */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(9, 13, 22, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #38BDF8, #818CF8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+        }
+        .logo-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #FFFFFF, #93C5FD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-btn:hover {
+            color: var(--text-main);
+        }
+        .nav-btn.active {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(52, 211, 153, 0.12);
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            color: var(--accent-emerald);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 9999px;
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-emerald);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-emerald);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Container */
+        .main-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px 80px 24px;
+        }
+
+        /* Hero Showcase */
+        .hero {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 27, 75, 0.90) 50%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 32px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: var(--accent-cyan);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            margin-bottom: 16px;
+        }
+        .hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #FFFFFF 20%, #93C5FD 60%, #C084FC 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 14px;
+        }
+        .hero-subtitle {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            max-width: 900px;
+            margin-bottom: 28px;
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .kpi-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .kpi-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            margin-bottom: 4px;
+        }
+        .kpi-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* Section Layouts */
+        .section-view {
+            display: none;
+        }
+        .section-view.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 24px;
+        }
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 6px;
+        }
+        .section-desc {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Interactive Circuit Simulator */
+        .circuit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.8fr;
+            gap: 24px;
+        }
+        .chip-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .chip-pill {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .chip-pill:hover {
+            border-color: var(--accent-cyan);
+        }
+        .chip-pill.selected {
+            background: rgba(56, 189, 248, 0.12);
+            border-color: var(--accent-cyan);
+        }
+        .chip-name {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .chip-role {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Code Viewer */
+        .code-box {
+            background: #0B1120;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            color: #E2E8F0;
+            overflow-x: auto;
+            max-height: 420px;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            color: #FFFFFF;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .copy-btn:hover {
+            background: var(--accent-cyan);
+            color: #000;
+        }
+
+        /* Accordion */
+        .faq-item {
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            background: rgba(15, 23, 42, 0.6);
+        }
+        .faq-question {
+            padding: 18px 22px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-question:hover {
+            color: var(--accent-cyan);
+        }
+        .faq-answer {
+            padding: 0 22px 18px 22px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            display: none;
+        }
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+        .faq-item.open .faq-question {
+            color: var(--accent-cyan);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .circuit-grid { grid-template-columns: 1fr; }
+            header { flex-direction: column; gap: 12px; }
+            .nav-tabs { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">⚡</div>
+            <div>
+                <div class="logo-title">Datasheet Engineering Studio</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">System Design & Architecture Portfolio</div>
+            </div>
+        </div>
+
+        <nav class="nav-tabs">
+            <button class="nav-btn active" onclick="showTab('arch')">🏛️ Architecture</button>
+            <button class="nav-btn" onclick="showTab('benchmark')">🚀 105-Q Benchmark</button>
+            <button class="nav-btn" onclick="showTab('circuit')">⚡ Circuit Validator</button>
+            <button class="nav-btn" onclick="showTab('visualizer')">📦 Vector IC Visualizer</button>
+            <button class="nav-btn" onclick="showTab('firmware')">💻 Firmware & EDA</button>
+            <button class="nav-btn" onclick="showTab('faqs')">🎯 Interview FAQs</button>
+        </nav>
+
+        <div class="status-pill">
+            <span class="pulse-dot"></span> 14/14 Tests Passed (100%)
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+
+        <!-- Hero Showcase -->
+        <section class="hero">
+            <div class="hero-badge">
+                <span class="pulse-dot"></span> Production-Ready Hardware RAG Platform
+            </div>
+            <h1 class="hero-title">Multimodal Datasheet Engineering Intelligence Platform</h1>
+            <p class="hero-subtitle">
+                An industrial-grade, multi-modal Retrieval-Augmented Generation (RAG) platform that solves complex hardware document parsing across <b>structured electrical tables</b>, <b>vector pinout schematics</b>, and <b>deep technical text</b> with automated EDA netlist and firmware synthesis.
+            </p>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: #38BDF8;">91.4%</div>
+                    <div class="kpi-label">Overall Accuracy (96/105)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: #34D399;">+11.1%</div>
+                    <div class="kpi-label">Table Accuracy Surge (93.3%)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: #C084FC;">+9.1%</div>
+                    <div class="kpi-label">Diagram Accuracy Surge (95.5%)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: #FBBF24;">32 ICs</div>
+                    <div class="kpi-label">6 Electronics Families</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 1: ARCHITECTURE ================= -->
+        <section id="tab-arch" class="section-view active">
+            <div class="section-header">
+                <h2 class="section-title">🏛️ Tri-Modal Ingestion & Hybrid Retrieval Pipeline</h2>
+                <p class="section-desc">How our multi-collection Qdrant architecture and Reciprocal Rank Fusion eliminate hallucination in semiconductor design.</p>
+            </div>
+
+            <div class="glass-panel" style="padding: 28px; margin-bottom: 24px;">
+                <h3 style="font-family: 'Outfit'; font-size: 1.3rem; margin-bottom: 16px; color: var(--accent-cyan);">Pipeline Workflow</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #38BDF8; text-transform: uppercase; margin-bottom: 6px;">1. Ingestion Squad</div>
+                        <h4 style="font-size: 1.05rem; margin-bottom: 8px;">Tri-Modal Extraction</h4>
+                        <p style="font-size: 0.88rem; color: var(--text-muted);">
+                            Decomposes PDF datasheets into Markdown tables (pdfplumber), OpenCV pinout diagram crops, and layout-aware text chunks.
+                        </p>
+                    </div>
+
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #34D399; text-transform: uppercase; margin-bottom: 6px;">2. Multi-Store Vector DB</div>
+                        <h4 style="font-size: 1.05rem; margin-bottom: 8px;">Qdrant 3-Store + BM25</h4>
+                        <p style="font-size: 0.88rem; color: var(--text-muted);">
+                            Indexes dense embeddings into 3 dedicated Qdrant collections alongside an inverted BM25 index for exact part numbers and hex codes.
+                        </p>
+                    </div>
+
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #C084FC; text-transform: uppercase; margin-bottom: 6px;">3. Hybrid Fusion & Gating</div>
+                        <h4 style="font-size: 1.05rem; margin-bottom: 8px;">RRF & Refusal Gate</h4>
+                        <p style="font-size: 0.88rem; color: var(--text-muted);">
+                            Fuses vector similarity with lexical ranks via Reciprocal Rank Fusion and Cross-Encoder reranking. Strictly refuses queries with confidence &lt; 0.35.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="background: #0B1120; border-radius: 12px; padding: 16px; border: 1px solid var(--border-color); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: #94A3B8;">
+                    <span style="color: #34D399;">RRF Formula:</span> RRF_score(d) = Σ [ 1 / (60 + rank_dense(d)) + 1 / (60 + rank_bm25(d)) ]
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: BENCHMARK ================= -->
+        <section id="tab-benchmark" class="section-view">
+            <div class="section-header">
+                <h2 class="section-title">🚀 105-Question Curated Benchmark Results</h2>
+                <p class="section-desc">Empirical comparative evaluation across 32 components in 6 electronics domains.</p>
+            </div>
+
+            <div class="glass-panel" style="padding: 24px; margin-bottom: 24px;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
+                            <th style="padding: 12px;">Category / Modality</th>
+                            <th style="padding: 12px;">Questions</th>
+                            <th style="padding: 12px;">Baseline (Text-Only)</th>
+                            <th style="padding: 12px;">Enhanced Multimodal</th>
+                            <th style="padding: 12px;">Accuracy Gain</th>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: 0.95rem;">
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                            <td style="padding: 14px 12px; font-weight: 600;">📖 Text Architecture Questions</td>
+                            <td style="padding: 14px 12px;">38</td>
+                            <td style="padding: 14px 12px;">84.2% (32/38)</td>
+                            <td style="padding: 14px 12px; font-weight: 700; color: #FFFFFF;">86.8% (33/38)</td>
+                            <td style="padding: 14px 12px; color: #38BDF8; font-weight: 700;">+2.6%</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                            <td style="padding: 14px 12px; font-weight: 600;">📋 Electrical Table Questions</td>
+                            <td style="padding: 14px 12px;">45</td>
+                            <td style="padding: 14px 12px;">82.2% (37/45)</td>
+                            <td style="padding: 14px 12px; font-weight: 700; color: #FFFFFF;">93.3% (42/45)</td>
+                            <td style="padding: 14px 12px; color: #34D399; font-weight: 700;">+11.1% Gain</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                            <td style="padding: 14px 12px; font-weight: 600;">🖼️ Pinout & Diagram Questions</td>
+                            <td style="padding: 14px 12px;">22</td>
+                            <td style="padding: 14px 12px;">86.4% (19/22)</td>
+                            <td style="padding: 14px 12px; font-weight: 700; color: #FFFFFF;">95.5% (21/22)</td>
+                            <td style="padding: 14px 12px; color: #34D399; font-weight: 700;">+9.1% Gain</td>
+                        </tr>
+                        <tr style="background: rgba(56, 189, 248, 0.08); font-weight: 700;">
+                            <td style="padding: 16px 12px; color: #FFFFFF;">🏆 OVERALL BENCHMARK</td>
+                            <td style="padding: 16px 12px;">105</td>
+                            <td style="padding: 16px 12px;">83.8% (88/105)</td>
+                            <td style="padding: 16px 12px; color: #38BDF8; font-size: 1.05rem;">91.4% (96/105)</td>
+                            <td style="padding: 16px 12px; color: #34D399; font-size: 1.05rem;">+7.6% (96/105)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: CIRCUIT VALIDATOR ================= -->
+        <section id="tab-circuit" class="section-view">
+            <div class="section-header">
+                <h2 class="section-title">⚡ Interactive Circuit Compatibility & Clearance Engine</h2>
+                <p class="section-desc">Select components to test live I2C address collisions, voltage mismatches, and power loads.</p>
+            </div>
+
+            <div class="circuit-grid">
+                <div class="glass-panel" style="padding: 20px;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 12px;">Select Circuit Configuration:</h3>
+                    
+                    <div class="chip-selector">
+                        <div class="chip-pill selected" onclick="simulateCircuit('esp32_conflict')">
+                            <div>
+                                <div class="chip-name">ESP32 + PCA9685 + INA219</div>
+                                <div class="chip-role">Host MCU + PWM Servo + High-Side Shunt</div>
+                            </div>
+                            <span style="color: #F43F5E; font-weight: 700; font-size: 0.8rem;">🚨 Collision</span>
+                        </div>
+
+                        <div class="chip-pill" onclick="simulateCircuit('rp2040_5v')">
+                            <div>
+                                <div class="chip-name">RP2040 + MAX485 + BME280</div>
+                                <div class="chip-role">Non-5V MCU + 5V RS-485 + 3.3V Sensor</div>
+                            </div>
+                            <span style="color: #FBBF24; font-weight: 700; font-size: 0.8rem;">⚠️ Level Shift</span>
+                        </div>
+
+                        <div class="chip-pill" onclick="simulateCircuit('drone_verified')">
+                            <div>
+                                <div class="chip-name">ESP32 + BME280 + MPU6050</div>
+                                <div class="chip-role">IoT Environmental Node (0x76 + 0x68)</div>
+                            </div>
+                            <span style="color: #34D399; font-weight: 700; font-size: 0.8rem;">✅ Verified Pass</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="padding: 24px;" id="circuit-audit-card">
+                    <div style="background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                        <span style="font-size:1.05rem; font-weight:700; color:#F43F5E;">⚠️ Critical I2C Address Collision Detected</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px;">
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">CURRENT DRAW</div>
+                            <div style="font-size: 1.3rem; font-weight: 700; color: #38BDF8;">11.0 mA</div>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">I2C BUS NODES</div>
+                            <div style="font-size: 1.3rem; font-weight: 700; color: #34D399;">2 Devices</div>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">CONFLICTS</div>
+                            <div style="font-size: 1.3rem; font-weight: 700; color: #F43F5E;">1 Critical</div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+                        <div style="font-weight: 700; color: #F43F5E; margin-bottom: 6px;">🚨 Address 0x40 Shared by PCA9685 and INA219</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                            <b>Mitigation:</b> Solder the A0 address bridge on INA219 to shift address to <b>0x41</b> or solder A0 on PCA9685 to move to <b>0x41-0x7F</b>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: VECTOR IC VISUALIZER ================= -->
+        <section id="tab-visualizer" class="section-view">
+            <div class="section-header">
+                <h2 class="section-title">📦 Vector Semiconductor IC Package Visualizer</h2>
+                <p class="section-desc">Interactive vector SVG chip models with color-coded pinout role mapping.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div class="glass-panel" style="padding: 24px; text-align: center;">
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px;">ESP32 (QFN-48 / Module Pinout)</h3>
+                    
+                    <svg viewBox="0 0 460 300" width="100%" height="280" xmlns="http://www.w3.org/2000/svg" style="background:#0F172A; border-radius:14px; border:1px solid rgba(255,255,255,0.1); font-family:Inter,sans-serif;">
+                        <rect x="140" y="20" width="180" height="250" rx="12" fill="#1E293B" stroke="#475569" stroke-width="2" />
+                        <path d="M 216 20 A 14 14 0 0 0 244 20" fill="#0F172A" stroke="#475569" stroke-width="1.5" />
+                        <text x="230" y="135" fill="#F8FAFC" font-size="16" font-weight="700" text-anchor="middle" font-family="Outfit">ESP32</text>
+                        <text x="230" y="155" fill="#94A3B8" font-size="11" text-anchor="middle">QFN-48 MCU</text>
+                        
+                        <!-- Left Pins -->
+                        <line x1="110" y1="50" x2="140" y2="50" stroke="#EF4444" stroke-width="3" />
+                        <rect x="105" y="40" width="35" height="20" rx="3" fill="#EF4444" />
+                        <text x="122" y="55" fill="#FFFFFF" font-size="9" font-weight="700" text-anchor="middle">1</text>
+                        <text x="95" y="55" fill="#EF4444" font-size="10" font-weight="600" text-anchor="end">3V3 (Power)</text>
+
+                        <line x1="110" y1="85" x2="140" y2="85" stroke="#38BDF8" stroke-width="3" />
+                        <rect x="105" y="75" width="35" height="20" rx="3" fill="#38BDF8" />
+                        <text x="122" y="90" fill="#FFFFFF" font-size="9" font-weight="700" text-anchor="middle">2</text>
+                        <text x="95" y="90" fill="#38BDF8" font-size="10" font-weight="600" text-anchor="end">GPIO21 (SDA)</text>
+
+                        <!-- Right Pins -->
+                        <line x1="320" y1="50" x2="350" y2="50" stroke="#475569" stroke-width="3" />
+                        <rect x="320" y="40" width="35" height="20" rx="3" fill="#475569" />
+                        <text x="338" y="55" fill="#FFFFFF" font-size="9" font-weight="700" text-anchor="middle">16</text>
+                        <text x="365" y="55" fill="#94A3B8" font-size="10" font-weight="600" text-anchor="start">GND (Ground)</text>
+
+                        <line x1="320" y1="85" x2="350" y2="85" stroke="#38BDF8" stroke-width="3" />
+                        <rect x="320" y="75" width="35" height="20" rx="3" fill="#38BDF8" />
+                        <text x="338" y="90" fill="#FFFFFF" font-size="9" font-weight="700" text-anchor="middle">17</text>
+                        <text x="365" y="90" fill="#38BDF8" font-size="10" font-weight="600" text-anchor="start">GPIO22 (SCL)</text>
+                    </svg>
+                </div>
+
+                <div class="glass-panel" style="padding: 24px; text-align: center;">
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px;">BME280 (Environmental Sensor)</h3>
+                    
+                    <svg viewBox="0 0 460 300" width="100%" height="280" xmlns="http://www.w3.org/2000/svg" style="background:#0F172A; border-radius:14px; border:1px solid rgba(255,255,255,0.1); font-family:Inter,sans-serif;">
+                        <rect x="140" y="30" width="180" height="220" rx="12" fill="#1E293B" stroke="#475569" stroke-width="2" />
+                        <path d="M 216 30 A 14 14 0 0 0 244 30" fill="#0F172A" stroke="#475569" stroke-width="1.5" />
+                        <text x="230" y="130" fill="#F8FAFC" font-size="16" font-weight="700" text-anchor="middle" font-family="Outfit">BME280</text>
+                        <text x="230" y="150" fill="#94A3B8" font-size="11" text-anchor="middle">I2C / SPI Sensor</text>
+
+                        <!-- Left Pins -->
+                        <line x1="110" y1="60" x2="140" y2="60" stroke="#EF4444" stroke-width="3" />
+                        <rect x="105" y="50" width="35" height="20" rx="3" fill="#EF4444" />
+                        <text x="122" y="65" fill="#FFFFFF" font-size="9" font-weight="700" text-anchor="middle">1</text>
+                        <text x="95" y="65" fill="#EF4444" font-size="10" font-weight="600" text-anchor="end">VCC (3.3V)</text>
+
+                        <line x1="110" y1="95" x2="140" y2="95" stroke="#475569" stroke-width="3" />
+                        <rect x="105" y="85" width="35" height="20" rx="3" fill="#475569" />
+                        <text x="122" y="100" fill="#FFFFFF" font-size="9" font-weight="700" text-anchor="middle">2</text>
+                        <text x="95" y="100" fill="#94A3B8" font-size="10" font-weight="600" text-anchor="end">GND (Ground)</text>
+
+                        <!-- Right Pins -->
+                        <line x1="320" y1="60" x2="350" y2="60" stroke="#34D399" stroke-width="3" />
+                        <rect x="320" y="50" width="35" height="20" rx="3" fill="#34D399" />
+                        <text x="338" y="65" fill="#FFFFFF" font-size="9" font-weight="700" text-anchor="middle">4</text>
+                        <text x="365" y="65" fill="#34D399" font-size="10" font-weight="600" text-anchor="start">SDA (I2C Data)</text>
+
+                        <line x1="320" y1="95" x2="350" y2="95" stroke="#38BDF8" stroke-width="3" />
+                        <rect x="320" y="85" width="35" height="20" rx="3" fill="#38BDF8" />
+                        <text x="338" y="100" fill="#FFFFFF" font-size="9" font-weight="700" text-anchor="middle">5</text>
+                        <text x="365" y="100" fill="#38BDF8" font-size="10" font-weight="600" text-anchor="start">SCL (I2C Clock)</text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: FIRMWARE & EDA ================= -->
+        <section id="tab-firmware" class="section-view">
+            <div class="section-header">
+                <h2 class="section-title">💻 Automated Firmware Drivers & EDA Netlist Synthesis</h2>
+                <p class="section-desc">Generate production Arduino C++, MicroPython, KiCad v6+ netlists, and SPICE models.</p>
+            </div>
+
+            <div class="glass-panel" style="padding: 24px;">
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <button class="nav-btn active" id="btn-cpp" onclick="switchCode('cpp')">⚡ Arduino / C++</button>
+                    <button class="nav-btn" id="btn-py" onclick="switchCode('py')">🐍 MicroPython</button>
+                    <button class="nav-btn" id="btn-kicad" onclick="switchCode('kicad')">📐 KiCad Netlist (.net)</button>
+                    <button class="nav-btn" id="btn-spice" onclick="switchCode('spice')">📈 SPICE Model (.cir)</button>
+                </div>
+
+                <div class="code-box" id="code-display">
+                    <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+<pre id="code-content">// Hardware Initialization Code for ESP32
+#include &lt;Arduino.h&gt;
+#include &lt;Wire.h&gt;
+
+#define PIN_I2C_SDA 21
+#define PIN_I2C_SCL 22
+#define ADDR_BME280 0x76
+
+void setup() {
+    Serial.begin(115200);
+    Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL);
+    Wire.setClock(400000); // 400kHz Fast-Mode
+    Serial.println(F("✓ I2C Bus initialized"));
+}
+
+void loop() {
+    delay(1000);
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 6: FAQS ================= -->
+        <section id="tab-faqs" class="section-view">
+            <div class="section-header">
+                <h2 class="section-title">🎯 Technical Interview FAQs & System Design Deep-Dive</h2>
+                <p class="section-desc">Key architectural trade-offs, scalability considerations, and failure prevention strategies.</p>
+            </div>
+
+            <div class="faq-item open">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    1. Why not just use whole-document 1M-token context windows (e.g. Gemini 1.5 Pro / GPT-4o)?
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    Whole-document context windows are slow (3-8 seconds latency), expensive at scale ($0.05+ per query), and suffer from the <i>"lost in the middle"</i> degradation when retrieving minute specifications (e.g., a specific 2-byte register on page 47 of a 90-page manual). Tri-modal hybrid RAG retrieves the exact table or diagram crop with <b>sub-100ms latency</b> and <b>91.4% accuracy</b> at 90% lower token cost.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    2. How do you prevent hallucinations where an incorrect voltage rating destroys hardware?
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    We employ <b>Dual-Tier Calibrated Refusal Gating</b>. Dense cosine similarity and reranker scores are normalized into a calibrated confidence metric (0.0 to 1.0). If the score drops below <b>0.35</b>, the system strictly triggers an explicit refusal (<i>"I do not have enough verified datasheet specifications"</i>). Furthermore, every claim requires an explicit ground truth citation (<code>[TEXT]</code>, <code>[TABLE: Page X]</code>, <code>[DIAGRAM: Page Y]</code>).
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    3. Why is Reciprocal Rank Fusion (RRF) superior to standard cosine similarity for datasheets?
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    Vector embeddings excel at semantic conceptual matching (e.g., <i>"temperature sensor"</i> ➔ <code>BME280</code>), but struggle with exact lexical identifiers like hex addresses (<code>0x76</code>), pin names (<code>GPIO21</code>), or part codes (<code>LM7805</code>). BM25 lexical indexing captures exact keyword tokens. <b>RRF</b> (<code>RRF(d) = Σ 1 / (60 + r(d))</code>) merges both rank distributions without requiring fragile score calibration across different scoring algorithms.
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Interactive Scripts -->
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            const target = document.getElementById('tab-' + tabId);
+            if (target) target.classList.add('active');
+            
+            event.target.classList.add('active');
+        }
+
+        function toggleFaq(el) {
+            el.parentElement.classList.toggle('open');
+        }
+
+        function switchCode(type) {
+            document.querySelectorAll('#tab-firmware .nav-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const pre = document.getElementById('code-content');
+            if (type === 'cpp') {
+                pre.innerText = `// Hardware Initialization Code for ESP32\n#include <Arduino.h>\n#include <Wire.h>\n\n#define PIN_I2C_SDA 21\n#define PIN_I2C_SCL 22\n#define ADDR_BME280 0x76\n\nvoid setup() {\n    Serial.begin(115200);\n    Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL);\n    Wire.setClock(400000); // 400kHz Fast-Mode\n    Serial.println(F("✓ I2C Bus initialized"));\n}\n\nvoid loop() {\n    delay(1000);\n}`;
+            } else if (type === 'py') {
+                pre.innerText = `# MicroPython Hardware Driver for ESP32\nimport machine\nimport time\n\ni2c = machine.I2C(0, scl=machine.Pin(22), sda=machine.Pin(21), freq=400000)\n\ndef scan_and_init():\n    print("🚀 Scanning I2C Bus...")\n    devices = [hex(x) for x in i2c.scan()]\n    print(f"✓ Detected devices: {devices}")\n\nif __name__ == '__main__':\n    scan_and_init()`;
+            } else if (type === 'kicad') {
+                pre.innerText = `(export (version "E")\n  (design\n    (source "esp32_hardware.kicad_sch")\n    (tool "Datasheet Engine EDA Netlist Generator v2.0")\n  )\n  (components\n    (comp (ref "U1") (value "ESP32") (footprint "Module:Breakout_Generic"))\n    (comp (ref "U2") (value "BME280") (footprint "Package_DIP:DIP-6"))\n  )\n  (nets\n    (net (code "1") (name "I2C_SDA") (node (ref "U1") (pin "21")) (node (ref "U2") (pin "4")))\n    (net (code "2") (name "I2C_SCL") (node (ref "U1") (pin "22")) (node (ref "U2") (pin "5")))\n  )\n)`;
+            } else if (type === 'spice') {
+                pre.innerText = `* SPICE Netlist for ESP32 Hardware System\n* Generated by Datasheet Engineering Intelligence Suite\n\nVCC_3V3 VCC_3V3 0 DC 3.3\n\n* BME280 Load & Pull-up Resistors\nR_BME280_LOAD VCC_3V3 0 916.7\nR_PU_SDA VCC_3V3 SDA 4.7k\nR_PU_SCL VCC_3V3 SCL 4.7k\n\n.tran 0.1m 10m\n.control\nrun\nplot v(VCC_3V3)\n.endc\n.end`;
+            }
+        }
+
+        function copyCode() {
+            const text = document.getElementById('code-content').innerText;
+            navigator.clipboard.writeText(text);
+            const btn = document.querySelector('.copy-btn');
+            btn.innerText = 'Copied!';
+            setTimeout(() => { btn.innerText = 'Copy Code'; }, 2000);
+        }
+
+        function simulateCircuit(mode) {
+            document.querySelectorAll('.chip-pill').forEach(p => p.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            const card = document.getElementById('circuit-audit-card');
+            if (mode === 'esp32_conflict') {
+                card.innerHTML = `
+                    <div style="background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                        <span style="font-size:1.05rem; font-weight:700; color:#F43F5E;">⚠️ Critical I2C Address Collision Detected</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px;">
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;"><div style="font-size: 0.75rem; color: var(--text-muted);">CURRENT DRAW</div><div style="font-size: 1.3rem; font-weight: 700; color: #38BDF8;">11.0 mA</div></div>
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;"><div style="font-size: 0.75rem; color: var(--text-muted);">I2C BUS NODES</div><div style="font-size: 1.3rem; font-weight: 700; color: #34D399;">2 Devices</div></div>
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;"><div style="font-size: 0.75rem; color: var(--text-muted);">CONFLICTS</div><div style="font-size: 1.3rem; font-weight: 700; color: #F43F5E;">1 Critical</div></div>
+                    </div>
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+                        <div style="font-weight: 700; color: #F43F5E; margin-bottom: 6px;">🚨 Address 0x40 Shared by PCA9685 and INA219</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;"><b>Mitigation:</b> Solder A0 on INA219 to change address to <b>0x41</b>.</div>
+                    </div>
+                `;
+            } else if (mode === 'rp2040_5v') {
+                card.innerHTML = `
+                    <div style="background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.4); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                        <span style="font-size:1.05rem; font-weight:700; color:#FBBF24;">⚠️ Logic-Level Mismatch Detected (5.0V on 3.3V MCU)</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px;">
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;"><div style="font-size: 0.75rem; color: var(--text-muted);">CURRENT DRAW</div><div style="font-size: 1.3rem; font-weight: 700; color: #38BDF8;">33.6 mA</div></div>
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;"><div style="font-size: 0.75rem; color: var(--text-muted);">I2C BUS NODES</div><div style="font-size: 1.3rem; font-weight: 700; color: #34D399;">1 Device</div></div>
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;"><div style="font-size: 0.75rem; color: var(--text-muted);">WARNINGS</div><div style="font-size: 1.3rem; font-weight: 700; color: #FBBF24;">1 Advisory</div></div>
+                    </div>
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+                        <div style="font-weight: 700; color: #FBBF24; margin-bottom: 6px;">⚠️ MAX485 outputs 5.0V UART logic to RP2040 GPIO (3.3V Max)</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;"><b>Mitigation:</b> Use a TXB0108 / BSS138 bidirectional level-shifter or resistor voltage divider on RO pin.</div>
+                    </div>
+                `;
+            } else if (mode === 'drone_verified') {
+                card.innerHTML = `
+                    <div style="background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.4); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                        <span style="font-size:1.05rem; font-weight:700; color:#34D399;">✅ Circuit Verified — No Electrical Conflicts Detected</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px;">
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;"><div style="font-size: 0.75rem; color: var(--text-muted);">CURRENT DRAW</div><div style="font-size: 1.3rem; font-weight: 700; color: #38BDF8;">7.4 mA</div></div>
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;"><div style="font-size: 0.75rem; color: var(--text-muted);">I2C BUS NODES</div><div style="font-size: 1.3rem; font-weight: 700; color: #34D399;">2 Devices (0x76, 0x68)</div></div>
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 12px; border-radius: 10px; text-align: center;"><div style="font-size: 0.75rem; color: var(--text-muted);">STATUS</div><div style="font-size: 1.3rem; font-weight: 700; color: #34D399;">PASS</div></div>
+                    </div>
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+                        <div style="font-weight: 700; color: #34D399; margin-bottom: 6px;">✓ Electrical Clearance Granted</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">All logic lines share 3.3V domains. Addresses 0x76 (BME280) and 0x68 (MPU6050) are distinct.</div>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

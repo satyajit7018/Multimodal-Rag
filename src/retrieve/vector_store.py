@@ -29,8 +29,12 @@ def get_qdrant_client(host: str = "localhost", port: int = 6333) -> QdrantClient
 
     # Use shared embedded client to avoid database file locks
     if _EMBEDDED_CLIENT is None:
-        os.makedirs(_STORAGE_PATH, exist_ok=True)
-        _EMBEDDED_CLIENT = QdrantClient(path=_STORAGE_PATH)
+        try:
+            os.makedirs(_STORAGE_PATH, exist_ok=True)
+            _EMBEDDED_CLIENT = QdrantClient(path=_STORAGE_PATH)
+        except Exception:
+            _EMBEDDED_CLIENT = QdrantClient(location=":memory:")
+
         # Suppress sqlite cross-thread teardown warnings
         orig_del = getattr(_EMBEDDED_CLIENT, "__del__", None)
         if orig_del:

@@ -67,13 +67,19 @@ def search_multimodal_parallel(question: str, top_k_per_modality: int = 3, top_r
     candidates = []
     hit_map = {}
     for h in all_hits:
-        content = h.payload.get("content", "")
-        if content:
+        content = h.payload.get("content") or h.payload.get("embed_text") or h.payload.get("caption", "")
+        if content and content not in hit_map:
             candidates.append(content)
             hit_map[content] = h
 
     # Cross-encoder precision rerank
     ranked_content = rerank(question, candidates, top_k=top_rerank) if candidates else []
+
+    # If an image hit is relevant, ensure its diagram pins and caption are grounded in contexts
+    if image_hits and image_hits[0].score > 0.28:
+        top_img_content = image_hits[0].payload.get("content") or image_hits[0].payload.get("embed_text") or image_hits[0].payload.get("caption")
+        if top_img_content and top_img_content not in ranked_content:
+            ranked_content.append(top_img_content)
 
     # Identify primary source table & diagram for visual grounding
     source_table = None

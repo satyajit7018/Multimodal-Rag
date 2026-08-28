@@ -3,21 +3,320 @@
     "id": "t1",
     "category": "text",
     "question": "What is the ESP32 typically used for in IoT applications?",
-    "answer": "Wi-Fi and Bluetooth enabled microcontroller for IoT connectivity",
-    "source_doc": "esp32_datasheet.pdf"
+    "answer": "Wi-Fi and Bluetooth enabled dual-core microcontroller for connected IoT edge devices",
+    "source_doc": "esp32_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t2",
+    "category": "text",
+    "question": "What type of CPU core is used in the ESP32 microcontroller?",
+    "answer": "Xtensa dual-core 32-bit LX6 microprocessor",
+    "source_doc": "esp32_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "t3",
+    "category": "text",
+    "question": "What interface protocols does the BME280 sensor support for host communication?",
+    "answer": "I2C and SPI digital communication interfaces",
+    "source_doc": "bme280_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t4",
+    "category": "text",
+    "question": "What three environmental parameters are measured by the BME280 sensor?",
+    "answer": "Barometric pressure, ambient temperature, and relative humidity",
+    "source_doc": "bme280_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t5",
+    "category": "text",
+    "question": "What is the primary function of the LM7805 integrated circuit?",
+    "answer": "3-terminal positive fixed linear voltage regulator providing 5V output",
+    "source_doc": "lm7805_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t6",
+    "category": "text",
+    "question": "Does the LM7805 include internal thermal overload protection?",
+    "answer": "Yes, it includes internal thermal overload protection and short-circuit current limiting",
+    "source_doc": "lm7805_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t7",
+    "category": "text",
+    "question": "What type of operational amplifier is the LM358?",
+    "answer": "Dual low-power operational amplifier designed to operate from a single power supply",
+    "source_doc": "lm358_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t8",
+    "category": "text",
+    "question": "Can the LM358 op-amp operate from a single positive power supply voltage?",
+    "answer": "Yes, it is designed for single-supply operation from 3V to 32V as well as split supplies",
+    "source_doc": "lm358_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t9",
+    "category": "text",
+    "question": "What is the L298N IC designed to drive in robotics and automation projects?",
+    "answer": "Inductive loads such as DC motors, stepper motors, relays, and solenoids",
+    "source_doc": "l298n_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t10",
+    "category": "text",
+    "question": "What topology is used in the L298N motor driver output stage?",
+    "answer": "Dual full-bridge (H-bridge) driver",
+    "source_doc": "l298n_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t11",
+    "category": "text",
+    "question": "What is the NE555 precision timer commonly used for?",
+    "answer": "Generating accurate time delays or oscillation in astable and monostable modes",
+    "source_doc": "ne555_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t12",
+    "category": "text",
+    "question": "What bus standard is the MAX485 transceiver designed for?",
+    "answer": "RS-485 and RS-422 differential multipoint communication",
+    "source_doc": "max485_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t13",
+    "category": "text",
+    "question": "What is the DHT22 (AM2302) sensor used for?",
+    "answer": "Digital temperature and relative humidity measurement with single-bus digital output",
+    "source_doc": "dht22_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t14",
+    "category": "text",
+    "question": "What processor core is the STM32F103 microcontroller based on?",
+    "answer": "ARM Cortex-M3 32-bit RISC core operating up to 72 MHz",
+    "source_doc": "stm32f103_datasheet.pdf",
+    "page": 1
+  },
+  {
+    "id": "t15",
+    "category": "text",
+    "question": "What is the PCA9685 chip used for in electronics circuits?",
+    "answer": "16-channel 12-bit PWM LED and servo controller over I2C bus",
+    "source_doc": "pca9685_datasheet.pdf",
+    "page": 1
   },
   {
     "id": "tab1",
     "category": "table",
-    "question": "What is the operating voltage range for the LM7805?",
-    "answer": "7V to 25V input, 5V regulated output",
-    "source_doc": "lm7805_datasheet.pdf"
+    "question": "What is the recommended operating input voltage range for the LM7805 regulator?",
+    "answer": "7V to 25V input voltage range",
+    "source_doc": "lm7805_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab2",
+    "category": "table",
+    "question": "What is the maximum output current capability of the LM7805 with adequate heatsinking?",
+    "answer": "1.5A maximum output current",
+    "source_doc": "lm7805_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab3",
+    "category": "table",
+    "question": "What is the absolute maximum supply voltage rating for the LM358 dual op-amp?",
+    "answer": "32V total supply voltage (or ±16V for split supplies)",
+    "source_doc": "lm358_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab4",
+    "category": "table",
+    "question": "What is the typical input offset voltage for the LM358 at 25°C?",
+    "answer": "2.0 mV typical input offset voltage",
+    "source_doc": "lm358_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab5",
+    "category": "table",
+    "question": "What is the operating supply voltage range for the BME280 sensor?",
+    "answer": "1.71V to 3.6V for VDD supply voltage",
+    "source_doc": "bme280_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab6",
+    "category": "table",
+    "question": "What is the humidity measurement accuracy tolerance of the BME280 sensor?",
+    "answer": "±3% relative humidity tolerance",
+    "source_doc": "bme280_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab7",
+    "category": "table",
+    "question": "What is the maximum total DC load current per channel for the L298N driver?",
+    "answer": "2.0A continuous DC current per bridge (2.5A peak non-repetitive)",
+    "source_doc": "l298n_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab8",
+    "category": "table",
+    "question": "What is the absolute maximum supply voltage (Vs) rating for the L298N motor driver power stage?",
+    "answer": "46V maximum supply voltage",
+    "source_doc": "l298n_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab9",
+    "category": "table",
+    "question": "What is the operating supply voltage range for the NE555 timer IC?",
+    "answer": "4.5V to 16V operating supply voltage",
+    "source_doc": "ne555_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab10",
+    "category": "table",
+    "question": "What is the maximum output source and sink current for the NE555 timer output pin?",
+    "answer": "200 mA maximum sink or source current",
+    "source_doc": "ne555_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab11",
+    "category": "table",
+    "question": "What is the supply voltage range for the MAX485 differential transceiver?",
+    "answer": "4.75V to 5.25V (5V nominal)",
+    "source_doc": "max485_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab12",
+    "category": "table",
+    "question": "What is the maximum data rate specified for the MAX485 transceiver?",
+    "answer": "2.5 Mbps maximum data transmission rate",
+    "source_doc": "max485_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab13",
+    "category": "table",
+    "question": "What is the temperature measurement range and accuracy of the DHT22 sensor?",
+    "answer": "-40°C to +80°C with ±0.5°C accuracy",
+    "source_doc": "dht22_datasheet.pdf",
+    "page": 2
+  },
+  {
+    "id": "tab14",
+    "category": "table",
+    "question": "What is the operating supply voltage range for the ESP32-WROOM-32 module?",
+    "answer": "3.0V to 3.6V (3.3V typical)",
+    "source_doc": "esp32_datasheet.pdf",
+    "page": 3
+  },
+  {
+    "id": "tab15",
+    "category": "table",
+    "question": "What is the I2C default 7-bit slave address for the PCA9685 controller when all address pins are grounded?",
+    "answer": "0x40 (binary 1000000)",
+    "source_doc": "pca9685_datasheet.pdf",
+    "page": 2
   },
   {
     "id": "img1",
     "category": "diagram",
-    "question": "Which pin on the DHT22 is the data output pin?",
-    "answer": "Pin 2",
-    "source_doc": "dht22_datasheet.pdf"
+    "question": "Which pin on the DHT22 4-pin package is the digital data I/O pin?",
+    "answer": "Pin 2 (DATA)",
+    "source_doc": "dht22_datasheet.pdf",
+    "page": 3
+  },
+  {
+    "id": "img2",
+    "category": "diagram",
+    "question": "In the standard LM7805 TO-220 pinout diagram, which pin is the Output pin?",
+    "answer": "Pin 3 (Pin 1 is Input, Pin 2 is Ground/GND, Pin 3 is Output)",
+    "source_doc": "lm7805_datasheet.pdf",
+    "page": 3
+  },
+  {
+    "id": "img3",
+    "category": "diagram",
+    "question": "In the LM358 8-pin DIP package pinout, which pins correspond to the inverting and non-inverting inputs of Amplifier 1?",
+    "answer": "Pin 2 (1IN-) is inverting input and Pin 3 (1IN+) is non-inverting input",
+    "source_doc": "lm358_datasheet.pdf",
+    "page": 3
+  },
+  {
+    "id": "img4",
+    "category": "diagram",
+    "question": "In the NE555 8-pin DIP pinout, which pin is the Trigger input and which is the Output pin?",
+    "answer": "Pin 2 is Trigger and Pin 3 is Output",
+    "source_doc": "ne555_datasheet.pdf",
+    "page": 3
+  },
+  {
+    "id": "img5",
+    "category": "diagram",
+    "question": "In the MAX485 8-pin DIP pinout diagram, which pins are the differential transmission lines A and B?",
+    "answer": "Pin 6 is Non-inverting driver output / receiver input A, and Pin 7 is Inverting line B",
+    "source_doc": "max485_datasheet.pdf",
+    "page": 3
+  },
+  {
+    "id": "img6",
+    "category": "diagram",
+    "question": "In the L298N Multiwatt-15 package pinout, which pins are Output 1 and Output 2 for Bridge A?",
+    "answer": "Pin 2 (OUT1) and Pin 3 (OUT2)",
+    "source_doc": "l298n_datasheet.pdf",
+    "page": 3
+  },
+  {
+    "id": "img7",
+    "category": "diagram",
+    "question": "According to the ESP32 pinout diagram, which strapping pin is used to control download/boot mode?",
+    "answer": "GPIO0 (Pin 25 / Strapping pin)",
+    "source_doc": "esp32_datasheet.pdf",
+    "page": 4
+  },
+  {
+    "id": "img8",
+    "category": "diagram",
+    "question": "In the BME280 LGA pinout diagram, which pin is the I2C Clock (SCL) and which is I2C Data (SDA)?",
+    "answer": "Pin 4 is SCK/SCL and Pin 3 is SDI/SDA",
+    "source_doc": "bme280_datasheet.pdf",
+    "page": 3
+  },
+  {
+    "id": "img9",
+    "category": "diagram",
+    "question": "In the LM7805 typical application circuit schematic, what recommended capacitor values are placed at the input and output terminals for stability?",
+    "answer": "0.33 µF (or 0.22 µF) ceramic capacitor at input (Cin) and 0.1 µF capacitor at output (Cout)",
+    "source_doc": "lm7805_datasheet.pdf",
+    "page": 3
+  },
+  {
+    "id": "img10",
+    "category": "diagram",
+    "question": "In the NE555 standard astable multivibrator schematic, which pin is connected to the timing resistor discharge path?",
+    "answer": "Pin 7 (DISCH / Discharge)",
+    "source_doc": "ne555_datasheet.pdf",
+    "page": 3
   }
 ]

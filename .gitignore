@@ -1,4 +1,5 @@
 venv/
+.venv/
 __pycache__/
 *.pyc
 .env
@@ -6,5 +7,6 @@ data/raw_pdfs/*
 !data/raw_pdfs/.gitkeep
 data/extracted/*
 !data/extracted/.gitkeep
+data/qdrant_storage/
 data/feedback_log.jsonl
 .DS_Store

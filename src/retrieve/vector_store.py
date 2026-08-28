@@ -71,12 +71,23 @@ class VectorStore:
         """Search by cosine similarity vector. If query_text is provided, applies
         keyword boost for exact alphanumeric part numbers.
         """
-        results = self.client.search(
-            collection_name=self.collection,
-            query_vector=query_vector,
-            limit=top_k,
-        )
-        return results
+        try:
+            if hasattr(self.client, "query_points"):
+                res = self.client.query_points(
+                    collection_name=self.collection,
+                    query=query_vector,
+                    limit=top_k,
+                )
+                return getattr(res, "points", res)
+            elif hasattr(self.client, "search"):
+                return self.client.search(
+                    collection_name=self.collection,
+                    query_vector=query_vector,
+                    limit=top_k,
+                )
+        except Exception as e:
+            print(f"[VectorStore search error]: {e}")
+        return []
 
     def count(self) -> int:
         """Returns total number of points in the collection."""

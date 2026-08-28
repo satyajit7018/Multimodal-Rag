@@ -113,6 +113,7 @@ def search_multimodal_parallel(question: str, top_k_per_modality: int = 3, top_r
 
     return {
         "all_hits": all_hits,
+        "raw_hits": all_hits,
         "ranked_contexts": ranked_content,
         "source_table": source_table,
         "source_table_meta": source_table_meta,

@@ -1,12 +1,12 @@
 """Streamlit Pro Studio for Datasheet Assistant — Scaled Multimodal RAG.
 Features:
 1. 🔍 Specification Search & Deep Technical Query Engine
-2. 📊 Multi-Part Comparison Matrix & Drop-In Upgrade Advisor
-3. ⚡ Circuit Compatibility & Conflict Detector (I2C collisions, logic level shifting, power budget)
-4. 🔌 Live Pin-to-Pin Wiring Assistant (Mermaid.js Visual Bus Schematics)
+2. 📊 Multi-Part Comparison Matrix, Regulator Efficiency Simulator & Drop-In Upgrades
+3. ⚡ Circuit Compatibility & Battery Life Power Estimator (1-Click Hardware Presets)
+4. 🔌 Pin-to-Pin Wiring Assistant, Vector IC Package Visualizer & Mermaid Bus Schematics
 5. 💻 Automated Firmware & EDA Netlist Generator (Arduino C++, MicroPython, KiCad .net, SPICE .cir)
 6. 📂 Parametric Corpus Library (32 Industrial components across 6 families)
-7. 🏆 Dual Benchmark Scorecard (105-Question comparative evaluation)
+7. 🏆 105-Question Benchmark Scorecard (105-Question comparative evaluation)
 """
 
 import os
@@ -30,6 +30,7 @@ from src.engine.report_generator import generate_engineering_pdf_report
 from src.engine.netlist_exporter import generate_kicad_netlist, generate_spice_netlist
 from src.engine.firmware_generator import generate_arduino_cpp, generate_micropython_code
 from src.engine.replacement_advisor import get_replacement_recommendations
+from src.engine.ic_visualizer import generate_chip_svg
 
 st.set_page_config(
     page_title="Datasheet Engineering Studio — Hardware Intelligence Platform",
@@ -251,8 +252,8 @@ with st.sidebar:
 tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "🔍 Specification Search",
     "📊 Comparison Matrix & Upgrades",
-    "⚡ Circuit Validator",
-    "🔌 Wiring Assistant & Visual Bus",
+    "⚡ Circuit Validator & Power Estimator",
+    "🔌 Wiring Assistant & IC Visualizer",
     "💻 Firmware & EDA Netlists",
     "📂 Parametric Library (32 Parts)",
     "🏆 105-Q Benchmark Scorecard",
@@ -295,7 +296,7 @@ with tab1:
         with st.spinner("Analyzing verified technical documentation and specs..."):
             if is_multimodal:
                 search_res = search_multimodal_parallel(user_query, top_k_per_modality=3, top_rerank=5)
-                raw_hits = search_res.get("raw_hits", [])
+                raw_hits = search_res.get("all_hits", []) or search_res.get("raw_hits", [])
                 ranked_contexts = search_res.get("ranked_contexts", [])
                 source_table = search_res.get("source_table")
                 source_table_meta = search_res.get("source_table_meta")
@@ -388,6 +389,32 @@ with tab2:
         st.dataframe(pd.DataFrame(rows), use_container_width=True)
 
     st.markdown("---")
+    st.markdown("### ⚡ Dynamic Regulator Efficiency & Voltage Drop Simulator")
+    st.write("Simulate thermal dissipation and efficiency across linear vs switching regulators:")
+    
+    sim_col1, sim_col2 = st.columns(2)
+    with sim_col1:
+        v_in_sim = st.slider("Input Voltage (Vin):", min_value=6.0, max_value=24.0, value=12.0, step=0.5)
+        i_load_sim = st.slider("Load Current (mA):", min_value=50, max_value=1500, value=500, step=50)
+    
+    with sim_col2:
+        # Linear LM7805 Dissipation: (Vin - 5V) * Iload
+        p_linear_mw = (v_in_sim - 5.0) * i_load_sim
+        eff_linear = round((5.0 / v_in_sim) * 100, 1)
+        
+        # Buck MP1584 Dissipation (assumes ~92% eff)
+        eff_buck = 92.0
+        p_buck_mw = (5.0 * i_load_sim * (1 - 0.92)) / 0.92
+
+        st.markdown(f"""
+        <div class="glass-card">
+            <div style="font-size:1.1rem; font-weight:700; color:#38BDF8; margin-bottom:8px;">Regulator Performance at {v_in_sim}V in / {i_load_sim}mA out:</div>
+            <p>• <b>LM7805 Linear Regulator:</b> <span style="color:#F43F5E; font-weight:700;">{eff_linear}% Efficiency</span> | Thermal Loss: <span style="color:#F43F5E; font-weight:700;">{p_linear_mw:.0f} mW</span> (Requires Heatsink)</p>
+            <p>• <b>MP1584 Buck Converter:</b> <span style="color:#34D399; font-weight:700;">{eff_buck}% Efficiency</span> | Thermal Loss: <span style="color:#34D399; font-weight:700;">{p_buck_mw:.0f} mW</span> (Cool operation)</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
     st.markdown("### 🔄 Drop-in Replacement & Upgrade Advisor")
     st.write("Find pin-compatible, higher-efficiency, or lower-power modern alternatives for existing designs:")
 
@@ -410,20 +437,44 @@ with tab2:
             </div>
             """, unsafe_allow_html=True)
 
-# ================= TAB 3: CIRCUIT COMPATIBILITY VALIDATOR =================
+# ================= TAB 3: CIRCUIT COMPATIBILITY & BATTERY ESTIMATOR =================
 with tab3:
-    st.markdown("### ⚡ Multi-Component Circuit Compatibility Validator")
-    st.write("Automated electrical clearance engine for **I2C address collisions**, **3.3V vs 5.0V logic mismatches**, and **power load limits**:")
+    st.markdown("### ⚡ Multi-Component Circuit Compatibility & Power Estimator")
+    st.write("Automated electrical clearance engine for **I2C address collisions**, **3.3V vs 5.0V logic mismatches**, and **battery runtime**:")
+
+    # 1-Click Hardware Project Presets
+    st.markdown("<div style='font-size:0.85rem; color:#94A3B8; font-weight:600; margin-bottom:6px;'>⚡ 1-Click Project Starter Presets:</div>", unsafe_allow_html=True)
+    p_col1, p_col2, p_col3, p_col4 = st.columns(4)
+    
+    default_mcu = "ESP32"
+    default_periphs = ["PCA9685", "INA219", "BME280"]
+
+    with p_col1:
+        if st.button("🌦️ IoT Weather Node", use_container_width=True):
+            default_mcu = "ESP32"
+            default_periphs = ["BME280", "DS18B20", "INA219"]
+    with p_col2:
+        if st.button("🚗 Robotics Controller", use_container_width=True):
+            default_mcu = "RP2040"
+            default_periphs = ["TB6612FNG", "PCA9685", "MPU6050"]
+    with p_col3:
+        if st.button("⚡ High-Side CAN Bus", use_container_width=True):
+            default_mcu = "STM32F103"
+            default_periphs = ["INA219", "MCP2515", "MAX485"]
+    with p_col4:
+        if st.button("🚁 Flight Controller", use_container_width=True):
+            default_mcu = "ESP32"
+            default_periphs = ["MPU6050", "VL53L0X", "ADS1115"]
 
     val_col1, val_col2 = st.columns([1, 1.8])
 
     with val_col1:
-        st.markdown("#### 🛠️ Circuit Configuration")
+        st.markdown("#### 🛠️ Circuit Selection")
         mcus = [k for k, v in COMPONENT_REGISTRY.items() if v["type"] == "MCU"]
         periphs = [k for k, v in COMPONENT_REGISTRY.items() if v["type"] != "MCU"]
 
-        sel_mcu = st.selectbox("Host Microcontroller:", mcus, index=0)
-        sel_periphs = st.multiselect("Connected Peripherals & Modules:", periphs, default=["PCA9685", "INA219", "BME280"])
+        sel_mcu = st.selectbox("Host Microcontroller:", mcus, index=mcus.index(default_mcu) if default_mcu in mcus else 0)
+        sel_periphs = st.multiselect("Connected Peripherals & Modules:", periphs, default=[p for p in default_periphs if p in periphs])
         validate_trigger = st.button("🔍 Run Electrical Compatibility Audit", type="primary", use_container_width=True)
 
     with val_col2:
@@ -465,10 +516,31 @@ with tab3:
                 for w in audit_res["compatibility_warnings"]:
                     st.warning(f"**{w['type']}**: {w['details']}\n\n💡 **Action Required**: {w['recommendation']}")
 
-# ================= TAB 4: PIN-TO-PIN WIRING ASSISTANT =================
+    # Battery Life & Power Estimator Widget
+    st.markdown("---")
+    st.markdown("### 🔋 Interactive Battery Runtime & Power Estimator")
+    b_col1, b_col2, b_col3 = st.columns(3)
+    with b_col1:
+        battery_type = st.selectbox(
+            "Select Battery Source:",
+            ["18650 Li-Ion (2500 mAh)", "3.7V LiPo (1200 mAh)", "CR2032 Coin Cell (225 mAh)", "9V Alkaline (550 mAh)"]
+        )
+        bat_mah = 2500 if "2500" in battery_type else (1200 if "1200" in battery_type else (225 if "225" in battery_type else 550))
+    with b_col2:
+        active_duty = st.slider("Active Mode Duty Cycle (%):", min_value=1, max_value=100, value=10, step=1)
+    with b_col3:
+        i_active = audit_res["total_estimated_current_ma"] + 80.0 # Include MCU active draw ~80mA
+        i_sleep = 0.05 # 50uA sleep
+        i_avg = (i_active * (active_duty / 100.0)) + (i_sleep * (1 - (active_duty / 100.0)))
+        runtime_hours = bat_mah / max(i_avg, 0.01)
+        runtime_days = runtime_hours / 24.0
+
+        st.metric("Estimated Runtime", f"{runtime_hours:.1f} Hours", f"{runtime_days:.1f} Days")
+
+# ================= TAB 4: WIRING ASSISTANT & IC VISUALIZER =================
 with tab4:
-    st.markdown("### 🔌 Live Pin-to-Pin Wiring Assistant & Visual Bus Schematics")
-    st.write("Generate grounded wiring schedules, pull-up resistor specifications, and interactive visual architecture diagrams:")
+    st.markdown("### 🔌 Live Pin-to-Pin Wiring Assistant & Vector IC Visualizer")
+    st.write("Generate grounded wiring schedules, interactive Mermaid bus diagrams, and vector IC packaging:")
 
     w_col1, w_col2 = st.columns([1, 2])
 
@@ -478,6 +550,11 @@ with tab4:
         wire_mcu = st.selectbox("Host Controller:", mcus, index=0, key="wire_mcu_select")
         all_other = [k for k in COMPONENT_REGISTRY.keys() if k != wire_mcu]
         wire_periphs = st.multiselect("Connected Chips:", all_other, default=["BME280", "MPU6050"], key="wire_periphs_select")
+
+        st.markdown("#### 📦 Vector IC Package Visualizer")
+        inspect_ic = st.selectbox("Inspect Pinout Package:", [wire_mcu] + wire_periphs)
+        svg_code = generate_chip_svg(inspect_ic)
+        st.markdown(svg_code, unsafe_allow_html=True)
 
     with w_col2:
         if wire_periphs:

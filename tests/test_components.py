@@ -166,3 +166,16 @@ def test_replacement_advisor():
     recs_l298n = get_replacement_recommendations("L298N")
     assert len(recs_l298n) >= 1
     assert any("TB6612FNG" in r["replacement"] for r in recs_l298n)
+
+
+def test_ic_visualizer_svg():
+    """Verify semiconductor IC package SVG vector renderer."""
+    from src.engine.ic_visualizer import generate_chip_svg
+    svg_esp = generate_chip_svg("ESP32")
+    assert "<svg" in svg_esp
+    assert "ESP32" in svg_esp
+    assert "IO21" in svg_esp
+
+    svg_bme = generate_chip_svg("BME280")
+    assert "<svg" in svg_bme
+    assert "BME280" in svg_bme

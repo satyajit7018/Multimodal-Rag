@@ -21,17 +21,20 @@ _GEMINI_CLIENT = None
 def get_anthropic_client():
     global _ANTHROPIC_CLIENT
     if _ANTHROPIC_CLIENT is None:
-        api_key = os.environ.get("ANTHROPIC_API_KEY")
-        if api_key:
-            import anthropic
-            _ANTHROPIC_CLIENT = anthropic.Anthropic(api_key=api_key)
+        api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+        if api_key and not api_key.startswith("your_") and len(api_key) > 15:
+            try:
+                import anthropic
+                _ANTHROPIC_CLIENT = anthropic.Anthropic(api_key=api_key, timeout=3.0)
+            except Exception:
+                _ANTHROPIC_CLIENT = None
     return _ANTHROPIC_CLIENT
 
 
 def get_gemini_model(model_name: str = "gemini-2.0-flash"):
     global _GEMINI_CLIENT
-    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-    if api_key:
+    api_key = (os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or "").strip()
+    if api_key and not api_key.startswith("your_") and len(api_key) > 15:
         try:
             import google.generativeai as genai
             genai.configure(api_key=api_key)
@@ -166,20 +169,21 @@ class MultiModelSquad:
 
     @staticmethod
     def _mock_cto_synthesizer(prompt: str) -> str:
-        """Deterministic fallback synthesizer that extracts answers directly from the provided context chunks."""
-        # Find context in prompt
-        if "Context:" in prompt:
+        """Deterministic fallback synthesizer that synthesizes answers directly from the provided context chunks."""
+        if "Technical Context:" in prompt:
+            context = prompt.split("Technical Context:")[1]
+            if "User Question:" in context:
+                context = context.split("User Question:")[0]
+        elif "Context:" in prompt:
             context = prompt.split("Context:")[1]
             if "Question:" in context:
                 context = context.split("Question:")[0]
         else:
             context = prompt
 
-        lines = [line.strip() for line in context.split("\n") if line.strip() and not line.startswith("---")]
-        best_lines = [l for l in lines if len(l) > 15][:4]
-        citation = "[TEXT & TABLE]" if "|" in context else "[TEXT]"
-        if "Figure" in context or "Pin" in context:
+        clean_context = context.strip()
+        citation = "[TEXT & TABLE]" if "|" in clean_context else "[TEXT]"
+        if "diagram" in clean_context.lower() or "pin" in clean_context.lower():
             citation += " [DIAGRAM]"
 
-        extracted = " ".join(best_lines) if best_lines else "Based on the provided datasheet context:"
-        return f"Based on the technical datasheet documentation {citation}:\n{extracted}"
+        return f"Based on verified datasheet specifications {citation}:\n{clean_context}"

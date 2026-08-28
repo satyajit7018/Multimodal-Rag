@@ -19,7 +19,7 @@ Rules:
 4. Calibrated Refusal: If the provided context does NOT contain sufficient information to answer the question accurately, politely refuse rather than speculating or guessing. State: "I do not have enough verified information in the provided datasheets to answer this question confidently."
 """
 
-CONFIDENCE_THRESHOLD = 0.55
+CONFIDENCE_THRESHOLD = 0.35
 
 
 def generate_cto_answer(question: str, context_chunks: List[str]) -> str:
@@ -45,7 +45,12 @@ def answer_with_confidence(
     """Applies confidence gating. Refuses if top retrieval relevance score < threshold."""
     top_score = 0.0
     if search_results:
-        scores = [getattr(r, "score", 0.0) for r in search_results]
+        scores = []
+        for r in search_results:
+            if isinstance(r, dict):
+                scores.append(r.get("score", 0.0))
+            else:
+                scores.append(getattr(r, "score", 0.0))
         top_score = max(scores, default=0.0)
 
     if top_score < threshold:

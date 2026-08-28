@@ -1,0 +1,23 @@
+[
+  {
+    "id": "t1",
+    "category": "text",
+    "question": "What is the ESP32 typically used for in IoT applications?",
+    "answer": "Wi-Fi and Bluetooth enabled microcontroller for IoT connectivity",
+    "source_doc": "esp32_datasheet.pdf"
+  },
+  {
+    "id": "tab1",
+    "category": "table",
+    "question": "What is the operating voltage range for the LM7805?",
+    "answer": "7V to 25V input, 5V regulated output",
+    "source_doc": "lm7805_datasheet.pdf"
+  },
+  {
+    "id": "img1",
+    "category": "diagram",
+    "question": "Which pin on the DHT22 is the data output pin?",
+    "answer": "Pin 2",
+    "source_doc": "dht22_datasheet.pdf"
+  }
+]

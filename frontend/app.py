@@ -227,11 +227,11 @@ st.markdown("""
 st.markdown("""
 <div class="hero-container">
     <div class="hero-badge">
-        <span class="pulse-dot"></span> Multi-Model Intelligence Engine Live
+        <span class="pulse-dot"></span> Hardware Design & Engineering Suite Active
     </div>
-    <div class="hero-title">⚡ Datasheet Assistant Pro Studio</div>
+    <div class="hero-title">⚡ Datasheet Engineering Studio</div>
     <div class="hero-subtitle">
-        Enterprise Multimodal RAG with dual-tier hierarchy: <b>Claude Opus 4.6 (Executive CTO)</b> supervising <b>Gemini 3.7 Flash Subagents</b> for tables, pinouts, circuit compatibility, and live wiring generation.
+        Automated hardware specification analysis, pinout verification, multi-component circuit compatibility, and schematic generation across 32 industrial semiconductor devices.
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -252,14 +252,14 @@ with st.sidebar:
     st.markdown("### ⚙️ Pipeline Mode")
     pipeline_mode = st.radio(
         "Retrieval Strategy:",
-        ["🚀 Multimodal Squad (BM25 + Dense RRF + Reranker)", "📄 Naive Baseline (Text-Only)"],
+        ["🚀 Advanced Hybrid Search (BM25 + Dense + Reranker)", "📄 Direct Keyword Index"],
         index=0,
     )
-    is_multimodal = "Multimodal" in pipeline_mode
+    is_multimodal = "Hybrid" in pipeline_mode or "Advanced" in pipeline_mode
 
 # ----------------- MAIN STUDIO TABS -----------------
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "🧠 Multimodal Assistant",
+    "🔍 Specification Search",
     "📊 Comparison Matrix",
     "⚡ Circuit Validator",
     "🔌 Wiring Assistant & Visual Bus",
@@ -267,13 +267,13 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "🏆 105-Q Benchmark Scorecard",
 ])
 
-# ================= TAB 1: MULTIMODAL ASSISTANT =================
+# ================= TAB 1: SPECIFICATION SEARCH =================
 with tab1:
     st.markdown("### 🔍 Technical Datasheet Query Engine")
-    st.write("Ask deep technical questions across specifications, electrical tables, and pinout schematics:")
+    st.write("Query technical specifications, electrical characteristics tables, and pinout schematics:")
 
     # Quick sample prompt buttons
-    st.markdown("<div style='font-size:0.85rem; color:#94A3B8; font-weight:600; margin-bottom:6px;'>💡 Quick Sample Prompts:</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:0.85rem; color:#94A3B8; font-weight:600; margin-bottom:6px;'>💡 Quick Sample Queries:</div>", unsafe_allow_html=True)
     sample_col1, sample_col2, sample_col3, sample_col4 = st.columns(4)
     
     preset_q = ""
@@ -298,10 +298,10 @@ with tab1:
 
     col_btn, col_metric1, col_metric2 = st.columns([1.5, 1, 1])
     with col_btn:
-        analyze_btn = st.button("🚀 Analyze Datasheet & Synthesize", type="primary", use_container_width=True)
+        analyze_btn = st.button("🔍 Search & Verify Specifications", type="primary", use_container_width=True)
 
     if analyze_btn or user_query:
-        with st.spinner("Executive CTO synthesizing multimodal evidence..."):
+        with st.spinner("Analyzing verified technical documentation and specs..."):
             if is_multimodal:
                 search_res = search_multimodal_parallel(user_query, top_k_per_modality=3, top_rerank=5)
                 raw_hits = search_res.get("raw_hits", [])
@@ -323,13 +323,13 @@ with tab1:
         # Display Top Metrics
         with col_metric1:
             conf_class = "conf-badge-high" if conf_score >= 0.50 else ("conf-badge-med" if conf_score >= 0.35 else "conf-badge-low")
-            conf_label = "HIGH CONFIDENCE" if conf_score >= 0.50 else ("MODERATE" if conf_score >= 0.35 else "REFUSAL (<0.35)")
+            conf_label = "VERIFIED MATCH" if conf_score >= 0.50 else ("MODERATE MATCH" if conf_score >= 0.35 else "INSUFFICIENT DATA (<0.35)")
             st.markdown(f"<div class='stat-box'><div class='stat-value'><span class='{conf_class}'>{conf_score:.3f}</span></div><div class='stat-label'>{conf_label}</div></div>", unsafe_allow_html=True)
         
         with col_metric2:
             status_color = "#F43F5E" if is_refusal else "#34D399"
-            status_text = "REFUSAL TRIGGERED" if is_refusal else "VERIFIED & GROUNDED"
-            st.markdown(f"<div class='stat-box'><div class='stat-value' style='color:{status_color};'>{len(ranked_contexts)}</div><div class='stat-label'>Context Chunks Fused</div></div>", unsafe_allow_html=True)
+            status_text = "INSUFFICIENT SPECS" if is_refusal else "SPECIFICATION GROUNDED"
+            st.markdown(f"<div class='stat-box'><div class='stat-value' style='color:{status_color};'>{len(ranked_contexts)}</div><div class='stat-label'>Data Sources Referenced</div></div>", unsafe_allow_html=True)
 
         st.markdown("---")
 
@@ -337,7 +337,7 @@ with tab1:
         ans_col, media_col = st.columns([1.2, 1])
 
         with ans_col:
-            st.markdown("#### 💬 Executive CTO Synthesis (Claude Opus 4.6)")
+            st.markdown("#### 📋 Verified Technical Specification Synthesis")
             st.markdown(f"""
             <div class="glass-card" style="border-left: 4px solid #38BDF8; font-size: 1.02rem; line-height: 1.6;">
                 {answer}

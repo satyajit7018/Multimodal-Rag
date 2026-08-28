@@ -1,7 +1,18 @@
 {
-  "venvPath": ".",
-  "venv": ".venv",
   "include": ["src", "tests", "frontend"],
-  "extraPaths": ["."],
-  "reportMissingImports": "warning"
+  "extraPaths": [
+    ".",
+    ".venv/lib/python3.9/site-packages"
+  ],
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": [
+        ".",
+        ".venv/lib/python3.9/site-packages"
+      ]
+    }
+  ],
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none"
 }

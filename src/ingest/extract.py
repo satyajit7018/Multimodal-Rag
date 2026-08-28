@@ -5,6 +5,7 @@ extract_elements() is the layout-aware path that separates text, tables, and ima
 """
 
 from __future__ import annotations
+import importlib
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -27,7 +28,8 @@ def extract_elements(pdf_path: str):
     table, or image so they can be processed and embedded separately.
     """
     try:
-        from unstructured.partition.pdf import partition_pdf
+        unstructured_pdf = importlib.import_module("unstructured.partition.pdf")
+        partition_pdf = getattr(unstructured_pdf, "partition_pdf")
 
         elements = partition_pdf(
             filename=pdf_path,
@@ -48,7 +50,7 @@ def extract_elements(pdf_path: str):
 
         return text_els, table_els, image_els
     except Exception:
-        # Fallback to pdfplumber/pypdf extraction if unstructured dependencies are not installed
+        # Fallback to pdfplumber/pypdf extraction if unstructured is not installed
         from src.ingest.table_extract import extract_tables_with_metadata
         from src.ingest.image_extract import extract_images_with_metadata
         

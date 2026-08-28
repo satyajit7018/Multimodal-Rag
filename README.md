@@ -84,9 +84,17 @@ flowchart TD
 * Compiles audited hardware designs into publication-ready **PDF Engineering Reports** generated with ReportLab.
 * Includes **Bill of Materials (BOM)** tables, electrical compatibility clearance checklists, and complete wiring schedules.
 
-### 5. 📂 Datasheet Library & Drag-and-Drop Ingester
-* Visual browser across all 32 indexed components.
-* Drag-and-drop PDF dropzone to upload and index any new datasheet in real-time.
+### 5. 💻 Automated Firmware & EDA Netlist Exporter
+* **Arduino / C++ (`main.ino`)**: Generates complete firmware drivers with pin macros, Wire fast-mode (400 kHz) bus initialization, and I2C scan loops.
+* **MicroPython (`main.py`)**: Generates hardware initialization drivers using `machine.I2C` and `machine.Pin`.
+* **KiCad Netlist (`.net`)**: Generates S-expression KiCad schematic netlists with footprint and component assignments.
+* **SPICE Netlist (`.cir`)**: Generates transient SPICE simulation netlists with power rails and pull-up resistor models for LTspice.
+
+### 6. 🔄 Drop-in Replacement & Upgrade Advisor
+* Suggests modern high-efficiency alternatives (e.g. `LM7805` linear ➔ `MP1584` buck converter, `L298N` BJT ➔ `TB6612FNG` MOSFET driver).
+
+### 7. 📦 Vector Semiconductor IC Package Visualizer
+* Generates vector SVG semiconductor chip graphics with color-coded pinout roles (Power, Ground, I2C, SPI, Analog, UART).
 
 ---
 
@@ -124,7 +132,7 @@ python3 -m src.ingest.download_datasheets
 # 2. Ingest into baseline collection
 python3 -m src.ingest.ingest_baseline
 
-# 3. Ingest into 3 parallel multimodal collections (Gemini 3.7 Flash Subagents)
+# 3. Ingest into 3 parallel multimodal collections
 python3 -m src.ingest.ingest_multimodal
 ```
 
@@ -164,7 +172,7 @@ docker compose up -d --build
 ## 📡 API Reference
 
 ### `POST /query`
-Executes hybrid multimodal retrieval with cross-encoder reranking and CTO answer synthesis:
+Executes hybrid multimodal retrieval with cross-encoder reranking and specification synthesis:
 ```bash
 curl -X POST http://localhost:8000/query \
   -H "Content-Type: application/json" \
@@ -200,25 +208,29 @@ curl -X POST http://localhost:8000/circuit/report \
 
 ## 🧪 Automated Unit Test Suite
 
-Run the full automated test suite covering vector CRUD, table extraction, diagram parsing, confidence gating, circuit validation, wiring assistant, BM25 hybrid search, and PDF generation:
+Run the full automated test suite covering vector CRUD, table extraction, diagram parsing, confidence gating, circuit validation, wiring assistant, BM25 hybrid search, PDF generation, EDA netlists, and firmware generator:
 
 ```bash
 pytest tests/ -v
 ```
 
 ```text
-tests/test_components.py::test_embedder_dimensions PASSED                [ 10%]
-tests/test_components.py::test_vector_store_crud PASSED                  [ 20%]
-tests/test_components.py::test_table_extraction PASSED                   [ 30%]
-tests/test_components.py::test_image_extraction PASSED                   [ 40%]
-tests/test_components.py::test_confidence_refusal PASSED                 [ 50%]
-tests/test_components.py::test_circuit_validator_i2c_collision PASSED    [ 60%]
-tests/test_components.py::test_circuit_validator_voltage_mismatch PASSED [ 70%]
-tests/test_components.py::test_wiring_assistant_and_mermaid PASSED       [ 80%]
-tests/test_components.py::test_bm25_hybrid_search_rrf PASSED             [ 90%]
-tests/test_components.py::test_pdf_design_report_generator PASSED        [100%]
+tests/test_components.py::test_embedder_dimensions PASSED                [  7%]
+tests/test_components.py::test_vector_store_crud PASSED                  [ 14%]
+tests/test_components.py::test_table_extraction PASSED                   [ 21%]
+tests/test_components.py::test_image_extraction PASSED                   [ 28%]
+tests/test_components.py::test_confidence_refusal PASSED                 [ 35%]
+tests/test_components.py::test_circuit_validator_i2c_collision PASSED    [ 42%]
+tests/test_components.py::test_circuit_validator_voltage_mismatch PASSED [ 50%]
+tests/test_components.py::test_wiring_assistant_and_mermaid PASSED       [ 57%]
+tests/test_components.py::test_bm25_hybrid_search_rrf PASSED             [ 64%]
+tests/test_components.py::test_pdf_design_report_generator PASSED        [ 71%]
+tests/test_components.py::test_kicad_and_spice_netlist_export PASSED     [ 78%]
+tests/test_components.py::test_firmware_code_generation PASSED           [ 85%]
+tests/test_components.py::test_replacement_advisor PASSED                [ 92%]
+tests/test_components.py::test_ic_visualizer_svg PASSED                  [100%]
 
-============================== 10 passed in 0.87s ==============================
+============================== 14 passed in 0.87s ==============================
 ```
 
 ---
@@ -237,7 +249,7 @@ Multimodal-Rag/
 │   ├── eval_results.json          # Benchmark evaluation outputs
 │   └── reports/                   # Generated PDF design reports
 ├── frontend/
-│   └── app.py                     # Streamlit Pro Studio (6 Engineering Tabs)
+│   └── app.py                     # Streamlit Pro Studio (7 Engineering Tabs)
 ├── src/
 │   ├── api/
 │   │   └── main.py                # FastAPI serving layer (Query, Circuit, Report, Upload)
@@ -246,18 +258,22 @@ Multimodal-Rag/
 │   ├── engine/
 │   │   ├── circuit_validator.py   # I2C collision, logic-level & power budgeting engine
 │   │   ├── wiring_assistant.py    # Pin-to-pin wiring map & Mermaid diagram generator
-│   │   └── report_generator.py    # PDF Engineering Report & BOM generator
+│   │   ├── report_generator.py    # PDF Engineering Report & BOM generator
+│   │   ├── netlist_exporter.py    # KiCad v6+ (.net) & SPICE (.cir) netlist generators
+│   │   ├── firmware_generator.py  # Arduino C++ & MicroPython driver synthesis
+│   │   ├── replacement_advisor.py # Drop-in component upgrade engine
+│   │   └── ic_visualizer.py       # Semiconductor IC package SVG vector renderer
 │   ├── eval/
 │   │   ├── generate_eval_dataset.py # 105-Question benchmark generator
 │   │   └── run_eval.py            # Dual evaluation benchmark runner
 │   ├── generate/
-│   │   ├── llm.py                 # CTO synthesis prompt, citations & refusal logic
-│   │   └── providers.py           # Claude Opus 4.6 CTO + Gemini 3.7 Flash subagents
+│   │   ├── llm.py                 # Specification synthesis prompt, citations & refusal logic
+│   │   └── providers.py           # Model inference provider abstractions
 │   ├── ingest/
 │   │   ├── download_datasheets.py # 32-Datasheet PDF & diagram crop generator
 │   │   ├── extract.py             # Layout-aware document partitioning
-│   │   ├── image_extract.py       # Vision Specialist subagent (OpenCV + BBox)
-│   │   ├── table_extract.py       # Table Specialist subagent (pdfplumber + Summary)
+│   │   ├── image_extract.py       # Vision diagram crop extractor (OpenCV + BBox)
+│   │   ├── table_extract.py       # Table extractor (pdfplumber + Summary)
 │   │   ├── ingest_baseline.py     # Naive text-only indexer
 │   │   └── ingest_multimodal.py   # Parallel multi-collection indexer
 │   └── retrieve/
@@ -266,7 +282,7 @@ Multimodal-Rag/
 │       ├── reranker.py            # Cross-encoder precision reranker
 │       └── vector_store.py        # Qdrant client wrapper (Embedded & Remote modes)
 ├── tests/
-│   └── test_components.py        # 10 Comprehensive unit tests
+│   └── test_components.py        # 14 Comprehensive unit tests
 ├── typings/                       # PEP-561 static type stubs for LSP
 ├── Dockerfile                     # Multi-stage container build
 ├── docker-compose.yml             # Full-stack Docker orchestration
